@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="SFPFSTPM:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>SFPFSTPM</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="SFPFSTPM.war">
+      <element id="artifact" artifact-name="SFPFSTPM:war exploded" />
+    </root>
+  </artifact>
+</component>

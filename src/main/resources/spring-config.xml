@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+	<context:component-scan base-package="com.smartflow.*">
+	</context:component-scan>
+
+	<!-- 配置数据源 服务器2017DEV数据库 MESDB jdbc:sqlserver://192.168.1.252\SQL2017DEV;databaseName=MESDB	-->
+	<!-- 配置数据源 服务器2017DEV数据库MESDB	 -->
+	<bean id="dataSource"
+		  class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.microsoft.sqlserver.jdbc.SQLServerDriver">
+		</property>
+		<!--<property name="jdbcUrl"-->
+				  <!--value="jdbc:sqlserver://192.168.1.252\SQL2017DEV;databaseName=MESDB_SXHTDL">-->
+		<!--</property>-->
+		<property name="jdbcUrl"
+				  value="jdbc:sqlserver://192.168.1.6:1433;databaseName=MESDB_SXHTDL">
+		</property>
+		<property name="user" value="sa">
+		</property>
+		<property name="password" value="1qaz@wsx">
+		</property>
+	</bean>
+	
+	
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!--能配置多少个property,可以查文档和查询源代码 -->
+		<!--最大上传文件的大小 单位字节-->
+		<property name="defaultEncoding" value="UTF-8">
+		</property>
+		<property name="maxUploadSize" value="8388608">
+		</property>
+		<property name="resolveLazily" value="true">
+		</property>
+	</bean>
+	
+	<!-- 配置sessionFactory -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource">
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<!--<prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop> -->
+				<prop key="hibernate.dialect">com.smartflow.util.MySQLServerDialect</prop>
+				<prop key="hibernate.hbm2ddl.auto">none</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				 <prop key="hibernate.c3p0.max_size">10</prop>
+				<!-- <prop key="hibernate.c3p0.min_size">0</prop>
+				<prop key="hibernate.c3p0.timeout">5000</prop>
+				<prop key="hibernate.c3p0.max_statements">100</prop>
+				<prop key="hibernate.c3p0.idle_test_period">300</prop>
+				<prop key="hibernate.c3p0.acquire_increment">2</prop>-->
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+				<prop key="hibernate.cache.configurationResourceName">ehcache.xml</prop>  
+			</props>
+		</property>
+		<property name="packagesToScan" value="com.smartflow.model">
+		</property>
+	</bean>
+	
+	<!-- 配置hibernateTemplate -->
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory">
+		</property>
+	</bean>
+	
+	<!-- 配置事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory">
+		</property>
+	</bean>
+
+	<!-- 线程池 -->
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="5" />
+		<property name="maxPoolSize" value="10" />
+		<property name="queueCapacity" value="25" />
+	</bean>
+	<!-- 通过注解的方式操作事务 -->
+	<tx:annotation-driven proxy-target-class="true"/>
+
+</beans>
