@@ -16,15 +16,15 @@
 		  class="com.mchange.v2.c3p0.ComboPooledDataSource">
 		<property name="driverClass" value="com.microsoft.sqlserver.jdbc.SQLServerDriver">
 		</property>
-		<!--<property name="jdbcUrl"-->
-				  <!--value="jdbc:sqlserver://192.168.1.252\SQL2017DEV;databaseName=MESDB_SXHTDL">-->
-		<!--</property>-->
 		<property name="jdbcUrl"
-				  value="jdbc:sqlserver://192.168.1.6:1433;databaseName=MESDB_SXHTDL">
+				  value="${jdbc.jdbcUrl}">
 		</property>
-		<property name="user" value="sa">
+		<!--<property name="jdbcUrl"-->
+				  <!--value="jdbc:sqlserver://192.168.1.6:1433;databaseName=MESDB_SXHTDL">-->
+		<!--</property>-->
+		<property name="user" value="${jdbc.user}">
 		</property>
-		<property name="password" value="1qaz@wsx">
+		<property name="password" value="${jdbc.password}">
 		</property>
 	</bean>
 	
@@ -89,4 +89,13 @@
 	<!-- 通过注解的方式操作事务 -->
 	<tx:annotation-driven proxy-target-class="true"/>
 
+
+	<beans profile="development">
+		<context:property-placeholder location="classpath:app-development.properties"/>
+	</beans>
+
+	<beans profile="production">
+		<context:property-placeholder location="classpath:app-production.properties"/>
+
+	</beans>
 </beans>
