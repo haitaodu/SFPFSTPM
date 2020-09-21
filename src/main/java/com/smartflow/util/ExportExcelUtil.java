@@ -49,7 +49,7 @@ public class ExportExcelUtil {
 			font.setFontName("宋体");
 			font.setFontHeightInPoints((short) 14);//设置字体大小
 			HSSFCellStyle cellStyle = wb.createCellStyle();
-			cellStyle.setAlignment(HorizontalAlignment.CENTER); // 居中
+			cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);  // 居中
 			cellStyle.setFont(font);
 
 			
