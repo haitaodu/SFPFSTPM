@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.smartflow.dto.MaintenanceTaskPlan.TaskPlanStepOutPutDTO;
+import com.smartflow.dto.maintenancetaskplan.TaskPlanStepOutPutDTO;
 import com.smartflow.model.MaintenanceItem;
 import com.smartflow.model.Material;
 import com.smartflow.model.Role;

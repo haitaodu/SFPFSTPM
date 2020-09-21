@@ -40,15 +40,14 @@
 				<configuration>
 					<path>/</path>
 					<uriEncoding>UTF-8</uriEncoding>
-					<url>http://192.168.1.211:8080/manager/text</url>
+					<url>http://192.168.1.6:8080/manager/text</url>
 					<server>tomcat7</server>
 					<username>admin</username>
 					<password>123456</password>
 					<update>true</update>
-					<path>/webapp</path>
+					<path>/SFPFSTPM</path>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 </project>

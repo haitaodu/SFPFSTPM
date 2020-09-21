@@ -1,8 +1,7 @@
-package com.smartflow.dto.MaintenanceTaskPlan;
+package com.smartflow.dto.maintenancetaskplan;
 
 import java.util.*;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MaintenanceTaskPlanPageDTO {

@@ -1,16 +1,19 @@
-package com.smartflow.dto.Facility;
+package com.smartflow.dto.facility;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * @author haita
+ */
 public class FacilityPageDTO {
-    int id;
-    String FacilityCode;
-    String Name;
-    String StationNumber;
-    String MaterialNumber;
-    String Brand;
-    String SupplierNumber;
-    String Model;
+    private int id;
+    private String FacilityCode;
+    private String Name;
+    private String StationNumber;
+    private String MaterialNumber;
+    private String Brand;
+    private String SupplierNumber;
+    private String Model;
 public  FacilityPageDTO(){};
     public FacilityPageDTO(int id, String facilityCode, String name, String stationNumber, String materialNumber, String brand, String supplierNumber, String model) {
         this.id = id;

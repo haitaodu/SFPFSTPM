@@ -1007,9 +1007,9 @@ public class RemindsAndAssignmentsController extends BaseController {
 //					Integer materialId = addAssignmentsListService.getMaterialIdByMaterialNumber(maintenanceSteps.getMaterialNumber());
 //					material.setId(materialId);
 //					workItem.setMaterial(material);
-//					MaintenanceItem maintenanceItem = new MaintenanceItem();
-//					maintenanceItem.setId(maintenanceSteps.getMaintenanceItemId());
-//					workItem.setMaintenanceItem(maintenanceItem);
+//					maintenanceitem maintenanceitem = new maintenanceitem();
+//					maintenanceitem.setId(maintenanceSteps.getMaintenanceItemId());
+//					workItem.setMaintenanceItem(maintenanceitem);
 //					workItem.setWorkDurationSec(maintenanceSteps.getWorkLength().multiply(new BigDecimal(60*60)).longValue());
 //					Role role = new Role();
 //					role.setId(maintenanceSteps.getRoleInChargeId());
@@ -1029,9 +1029,9 @@ public class RemindsAndAssignmentsController extends BaseController {
 //					Integer materialId = addAssignmentsListService.getMaterialIdByMaterialNumber(maintenanceSteps.getMaterialNumber());
 //					material.setId(materialId);
 //					workItem.setMaterial(material);
-//					MaintenanceItem maintenanceItem = new MaintenanceItem();
-//					maintenanceItem.setId(maintenanceSteps.getMaintenanceItemId());
-//					workItem.setMaintenanceItem(maintenanceItem);
+//					maintenanceitem maintenanceitem = new maintenanceitem();
+//					maintenanceitem.setId(maintenanceSteps.getMaintenanceItemId());
+//					workItem.setMaintenanceItem(maintenanceitem);
 //					workItem.setWorkDurationSec(maintenanceSteps.getWorkLength().multiply(new BigDecimal(60*60)).longValue());
 //					Role role = new Role();
 //					role.setId(maintenanceSteps.getRoleInChargeId());
@@ -1059,9 +1059,9 @@ public class RemindsAndAssignmentsController extends BaseController {
 //						Integer materialId = addAssignmentsListService.getMaterialIdByMaterialNumber(maintenanceSteps.getMaterialNumber());
 //						material.setId(materialId);
 //						workItem.setMaterial(material);
-//						MaintenanceItem maintenanceItem = new MaintenanceItem();
-//						maintenanceItem.setId(maintenanceSteps.getMaintenanceItemId());
-//						workItem.setMaintenanceItem(maintenanceItem);
+//						maintenanceitem maintenanceitem = new maintenanceitem();
+//						maintenanceitem.setId(maintenanceSteps.getMaintenanceItemId());
+//						workItem.setMaintenanceItem(maintenanceitem);
 //						workItem.setWorkDurationSec(maintenanceSteps.getWorkLength().multiply(new BigDecimal(60*60)).longValue());
 //						Role role = new Role();
 //						role.setId(maintenanceSteps.getRoleInChargeId());

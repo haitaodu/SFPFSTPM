@@ -37,7 +37,7 @@ public class AddAssignmentsListDaoImpl implements AddAssignmentsListDao {
 	@Override
 	public List<Map<String, Object>> getMaintenanceItemList() {
 		Session session = sessionFactory.openSession();
-		String sql = "select Id [key],Name label from tpm.MaintenanceItem where State = 1";
+		String sql = "select Id [key],Name label from tpm.maintenanceitem where State = 1";
 		try{
 			Query query = session.createSQLQuery(sql);
 			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
@@ -110,7 +110,7 @@ public class AddAssignmentsListDaoImpl implements AddAssignmentsListDao {
 
 	@Override
 	public Integer getMaintenanceItemIdByMaintenanceItem(String maintenanceItemName) {
-		String hql = "select id from MaintenanceItem where Name = '"+maintenanceItemName+"'";
+		String hql = "select id from maintenanceitem where Name = '"+maintenanceItemName+"'";
 		Session session = sessionFactory.openSession();
 		try {
 			Query query = session.createQuery(hql);

@@ -2,8 +2,9 @@ package com.smartflow.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.smartflow.cron.pojo.CronPosition;
-import com.smartflow.dto.Facility.FacilityAddDTO;
-import com.smartflow.dto.Facility.FacilityPageDTO;
+import com.smartflow.dto.facility.FacilityAddDTO;
+import com.smartflow.dto.facility.FacilityPageDTO;
+import com.smartflow.dto.facility.FacilityPageSearchDTO;
 import com.smartflow.model.BOMHeadModel;
 import com.smartflow.service.BOMHeadService;
 import com.smartflow.service.FacilityService;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.File;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -29,41 +31,34 @@ import java.util.*;
 @Controller
 @RequestMapping("/api/Facility")
 public class FacilityController extends  BaseController {
-	@Autowired
-	FacilityService facilityService;
-	@Autowired
-	BOMHeadService bomHeadService;
-	@Autowired
-	StationService stationService;
-	@Autowired
-	SupplierService supplierService;
+	private final
+    FacilityService facilityService;
+	private final
+    BOMHeadService bomHeadService;
+	private final
+    StationService stationService;
+	private final
+    SupplierService supplierService;
     private static Logger logger = Logger.getLogger(FacilityController.class);
+
+    @Autowired
+    public FacilityController(FacilityService facilityService, BOMHeadService bomHeadService, StationService stationService, SupplierService supplierService) {
+        this.facilityService = facilityService;
+        this.bomHeadService = bomHeadService;
+        this.stationService = stationService;
+        this.supplierService = supplierService;
+    }
+
     @CrossOrigin(origins = "*",maxAge = 3600)
-    @RequestMapping(value="/GetTByCondition",method= RequestMethod.POST)
-    public @ResponseBody Object getPages(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        JSONObject jsonObject= ReadDataUtil.paramData(request);
+    @PostMapping (value="/GetTByCondition")
+    public @ResponseBody Object getPages(@RequestBody @Valid FacilityPageSearchDTO facilityPageSearchDTO) throws Exception {
+
         Map<String, Object> json = new HashMap<String, Object>();
         Map<String, Object> map = new HashMap<String, Object>();
-        Integer PageIndex =(Integer) jsonObject.get("PageIndex");
-        Integer PageSize=(Integer) jsonObject.get("PageSize");
-		Integer.parseInt(jsonObject.get("PageSize").toString());
-        String facilityCode = jsonObject.getString("FacilityCode") == null ? null : jsonObject.getString("FacilityCode");
-        String stationNumber= jsonObject.getString("StationNumber") == null ? null : jsonObject.getString("StationNumber");
-        String name = jsonObject.getString("Name") == null ? null : jsonObject.getString("Name");
-        String materialNumber = jsonObject.getString("MaterialNumber") == null ? null : jsonObject.getString("MaterialNumber");
-        String supplierCode = jsonObject.getString("SupplierCode") == null ? null : jsonObject.getString("SupplierCode");
-        String brand = jsonObject.getString("Brand") == null ? null : jsonObject.getString("Brand");
-        String model = jsonObject.getString("Model") == null ? null : jsonObject.getString("Model");
         List<FacilityPageDTO> facilityPageDTOS=new ArrayList<>();
-        facilityPageDTOS=facilityService.getPagesByConditions(facilityCode, 
-        		stationNumber, name, materialNumber, brand,
-        		supplierCode, model,PageSize,PageIndex);
-        
-
-
+        facilityPageDTOS=facilityService.getPagesByConditions(facilityPageSearchDTO);
         int max=CronPosition.SECOND.getMax();
-        map.put("RowCount", facilityService.getCountAll(facilityCode, 
-        		stationNumber, name, materialNumber, brand, supplierCode, model));
+        map.put("RowCount", facilityService.getCountAll(facilityPageSearchDTO));
         map.put("Tdto", facilityPageDTOS);
         try {
             json= this.setJson(200, "Success", map);
@@ -100,8 +95,6 @@ public class FacilityController extends  BaseController {
     {
         Map<String, Object> json=new HashMap<String,Object>();
         Map<String, Object> map=new HashMap<>();
-
-  
         map.put("StationList",stationService.getStationGroup());
         map.put("SupplierList", supplierService.getSupplierList());
         try {
@@ -277,14 +270,13 @@ public class FacilityController extends  BaseController {
         } catch (Exception e) {
             json = this.setJson(0, e.getMessage(),1);
             logger.error(e);
-            e.printStackTrace();
         }
         return json;
 
     }
     
     @CrossOrigin(origins = "*",maxAge = 3600)
-    @RequestMapping(value="/File",method=RequestMethod.POST)
+    @PostMapping(value="/File")
 
 	public @ResponseBody  Object  upload( HttpServletRequest request, 
 

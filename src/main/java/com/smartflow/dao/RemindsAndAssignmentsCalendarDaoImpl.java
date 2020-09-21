@@ -31,7 +31,7 @@ public class RemindsAndAssignmentsCalendarDaoImpl implements RemindsAndAssignmen
 	public List<CalendarDataDTO> getAssignmentsCalendar() {
 		String sql = "select a.StartDateTime,a.EndDateTime,a.CRONExpression,a.WorkPlan_ReminderId,b.* from "
 				+ "(select r.StartDateTime,r.EndDateTime,r.CRONExpression,tr.Id WorkPlan_ReminderId,tr.TPMWorkPlanId,tr.ReminderId from core.Reminder r,tpm.TPMWorkPlan_Reminder tr where r.State = 1 and r.Id = tr.ReminderId) a,"
-				+ "(select wp.Id WorkPlanId,wp.Name WorkPlanName,f.Id FacilityId,f.Name FacilityName  from tpm.WorkPlan wp,core.Facility f where wp.TargetFacilityId = f.Id and wp.State = 1 and f.State = 1) b "
+				+ "(select wp.Id WorkPlanId,wp.Name WorkPlanName,f.Id FacilityId,f.Name FacilityName  from tpm.WorkPlan wp,core.facility f where wp.TargetFacilityId = f.Id and wp.State = 1 and f.State = 1) b "
 				+ "where a.TPMWorkPlanId = b.WorkPlanId";
 		Session session = sessionFactory.openSession();
 		List<CalendarDataDTO> calendarDataList = new ArrayList<>();

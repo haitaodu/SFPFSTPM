@@ -218,7 +218,7 @@ public class MyTaskDaoImpl implements MyTaskDao {
 	@Override
 	public List<Map<String, Object>> getFacilityList() {
 		Session session = sessionFactory.openSession();
-		String sql = "select Id [key],Name label from core.Facility where State = 1";
+		String sql = "select Id [key],Name label from core.facility where State = 1";
 		try{
 			Query query = session.createSQLQuery(sql);
 			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();

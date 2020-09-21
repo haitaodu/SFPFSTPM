@@ -65,7 +65,7 @@ public interface EditAssignmentsListService {
 	 * @param maintenanceItemName 维保项名称
 	 * @return 维保项
 	 */
-//	public MaintenanceItem getMaintenanceItemByMaintenanceName(String maintenanceItemName);
+//	public maintenanceitem getMaintenanceItemByMaintenanceName(String maintenanceItemName);
 	/**
 	 * 根据workorderId查询WorkOrderItem
 	 * @param workOrderId

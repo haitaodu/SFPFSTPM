@@ -1,4 +1,4 @@
-package com.smartflow.dto.Facility;
+package com.smartflow.dto.facility;
 
 import java.util.Date;
 

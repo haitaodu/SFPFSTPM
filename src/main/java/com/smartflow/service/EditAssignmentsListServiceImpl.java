@@ -59,7 +59,7 @@ public class EditAssignmentsListServiceImpl implements EditAssignmentsListServic
 	}
 
 //	@Override
-//	public MaintenanceItem getMaintenanceItemByMaintenanceName(String maintenanceItemName) {		
+//	public maintenanceitem getMaintenanceItemByMaintenanceName(String maintenanceItemName) {
 //		return editAssignmentsListDao.getMaintenanceItemByMaintenanceName(maintenanceItemName);
 //	}
 

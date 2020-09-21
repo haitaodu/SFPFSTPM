@@ -1,68 +1,52 @@
-package com.smartflow.dto.MaintenanceTaskPlan;
+package com.smartflow.dto.maintenancetaskplan;
 
-public class MaintenanceTaskPlanEditeDTO {
-    String TargetFacility;
-    String RoleName;
-    String State;
-    
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.math.BigDecimal;
+
+public class MaintenancePreviewDTO {
+    Integer Id;
     String MaintenanceItemName;
     String Position;
     String MaterialNumber;
     String ItemName;
-    float WorkLength;
+    long WorkLength;
+    String RoleName;
     String MeasurementType;
-    float MeasurementStandardUpperLimit;
-    float MeasurementStandardLowerLimit;
-    float MeasurementStandardMiddleValue;
+    BigDecimal MeasurementStandardUpperLimit;
+    BigDecimal MeasurementStandardLowerLimit;
+    BigDecimal MeasurementStandardMiddleValue;
     String GuideDocURI;
-    String PlanName;
-    Integer PlanType;
 
-    public MaintenanceTaskPlanEditeDTO(String targetFacility, String roleName, String state, String maintenanceItemName, String designator, String materialNumber, String name, float workDurationTime, String measurementType, float USL, float LSL, float normalValue, String guideDocURI, String planName, Integer planType) {
-        TargetFacility = targetFacility;
-        RoleName = roleName;
-        State = state;
-       
+    public MaintenancePreviewDTO(Integer id, String maintenanceItemName, String designator, String materialNumber, String name, long workDurationTime, String roleName, String measurementType, BigDecimal USL, BigDecimal LSL, BigDecimal normalValue, String guideDocURI) {
+        Id = id;
         MaintenanceItemName = maintenanceItemName;
         Position = designator;
         MaterialNumber = materialNumber;
         ItemName = name;
         WorkLength = workDurationTime;
+        RoleName = roleName;
         MeasurementType = measurementType;
         this.MeasurementStandardUpperLimit = USL;
         this.MeasurementStandardLowerLimit = LSL;
         MeasurementStandardMiddleValue = normalValue;
         GuideDocURI = guideDocURI;
-        PlanName = planName;
-        PlanType = planType;
+    }
+    public MaintenancePreviewDTO(){};
+public MaintenancePreviewDTO(Integer id2, String name, String designator, String materialNumber2, String name2,
+			long workDurationSec, String roleName2, Integer measurementType2, BigDecimal usl, BigDecimal lsl,
+			BigDecimal nromalValue, String guideDocURI2) {
+		// TODO Auto-generated constructor stub
+	}
+@JsonProperty("Id")
+    public Integer getId() {
+        return Id;
     }
 
-    public String getTargetFacility() {
-        return TargetFacility;
+    public void setId(Integer id) {
+        Id = id;
     }
-
-    public void setTargetFacility(String targetFacility) {
-        TargetFacility = targetFacility;
-    }
-
-    public String getRoleName() {
-        return RoleName;
-    }
-
-    public void setRoleName(String roleName) {
-        RoleName = roleName;
-    }
-
-    public String getState() {
-        return State;
-    }
-
-    public void setState(String state) {
-        State = state;
-    }
-
- 
-
+    @JsonProperty("MaintenanceItemName")
     public String getMaintenanceItemName() {
         return MaintenanceItemName;
     }
@@ -70,7 +54,7 @@ public class MaintenanceTaskPlanEditeDTO {
     public void setMaintenanceItemName(String maintenanceItemName) {
         MaintenanceItemName = maintenanceItemName;
     }
-
+    @JsonProperty("Position")
     public String getDesignator() {
         return Position;
     }
@@ -78,7 +62,7 @@ public class MaintenanceTaskPlanEditeDTO {
     public void setDesignator(String designator) {
         Position = designator;
     }
-
+    @JsonProperty("MaterialNumber")
     public String getMaterialNumber() {
         return MaterialNumber;
     }
@@ -86,7 +70,7 @@ public class MaintenanceTaskPlanEditeDTO {
     public void setMaterialNumber(String materialNumber) {
         MaterialNumber = materialNumber;
     }
-
+    @JsonProperty("ItemName")
     public String getName() {
         return ItemName;
     }
@@ -94,15 +78,23 @@ public class MaintenanceTaskPlanEditeDTO {
     public void setName(String name) {
         ItemName = name;
     }
-
+    @JsonProperty("WorkLength")
     public float getWorkDurationTime() {
         return WorkLength;
     }
 
-    public void setWorkDurationTime(float workDurationTime) {
+    public void setWorkDurationTime(long workDurationTime) {
         WorkLength = workDurationTime;
     }
+    @JsonProperty("RoleName")
+    public String getRoleName() {
+        return RoleName;
+    }
 
+    public void setRoleName(String roleName) {
+        RoleName = roleName;
+    }
+    @JsonProperty("MeasurementType")
     public String getMeasurementType() {
         return MeasurementType;
     }
@@ -110,52 +102,36 @@ public class MaintenanceTaskPlanEditeDTO {
     public void setMeasurementType(String measurementType) {
         MeasurementType = measurementType;
     }
-
-    public float getUSL() {
+    @JsonProperty("MeasurementStandardUpperLimit")
+    public BigDecimal getUSL() {
         return MeasurementStandardUpperLimit;
     }
 
-    public void setUSL(float USL) {
+    public void setUSL(BigDecimal USL) {
         this.MeasurementStandardUpperLimit = USL;
     }
-
-    public float getLSL() {
+    @JsonProperty("MeasurementStandardLowerLimit")
+    public BigDecimal getLSL() {
         return MeasurementStandardLowerLimit;
     }
 
-    public void setLSL(float LSL) {
+    public void setLSL(BigDecimal LSL) {
         this.MeasurementStandardLowerLimit = LSL;
     }
-
-    public float getNormalValue() {
+    @JsonProperty("MeasurementStandardMiddleValue")
+    public BigDecimal getNormalValue() {
         return MeasurementStandardMiddleValue;
     }
 
-    public void setNormalValue(float normalValue) {
+    public void setNormalValue(BigDecimal normalValue) {
         MeasurementStandardMiddleValue = normalValue;
     }
-
+    @JsonProperty("GuideDocURI")
     public String getGuideDocURI() {
         return GuideDocURI;
     }
 
     public void setGuideDocURI(String guideDocURI) {
         GuideDocURI = guideDocURI;
-    }
-
-    public String getPlanName() {
-        return PlanName;
-    }
-
-    public void setPlanName(String planName) {
-        PlanName = planName;
-    }
-
-    public Integer getPlanType() {
-        return PlanType;
-    }
-
-    public void setPlanType(Integer planType) {
-        PlanType = planType;
     }
 }

@@ -1,4 +1,4 @@
-package com.smartflow.dto.MaintenanceItem;
+package com.smartflow.dto.maintenanceitem;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

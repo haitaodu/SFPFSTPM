@@ -3,17 +3,19 @@ package com.smartflow.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.smartflow.dto.Facility.FacilityAddDTO;
-import com.smartflow.dto.Facility.FacilityDetailDTO;
-import com.smartflow.dto.Facility.FacilityEditeDTO;
-import com.smartflow.dto.Facility.FacilityPageDTO;
+import com.smartflow.dto.facility.*;
 import com.smartflow.model.FacilityModel;
 
+/**
+ * @author haita
+ */
 public interface FacilityDao {
-	//根据前端给出的条件，分页查询
-	List<FacilityPageDTO> getPagesByConditions(String facilityCode,String stationCode,String name
-			,String materialNumber,String brand,String supplier,
-			String model,Integer pageSize,Integer pageIndex);
+	/**
+	 * 查询分页数据
+	 * @param facilityPageSearchDTO 查询参数
+	 * @return 返回分页数据
+	 */
+	List<FacilityModel> getPagesByConditions(FacilityPageSearchDTO facilityPageSearchDTO);
 	//根据Id找出相应的设备信息
 	FacilityDetailDTO getdetailById(Integer id);
 	//根据Id查找到相应的设备信息用于编辑化模块的使用
@@ -24,13 +26,16 @@ public interface FacilityDao {
 	void saveFacility(FacilityAddDTO facilityAddDTO );
 	//根据设备号查出相应的设备信息
 	FacilityModel getFacilityModleByCode(String facilityCode);
-	//The list of Facility,Map<String,object>
+	//The list of facility,Map<String,object>
 	List<Map<String, Object>> getFacilityList();
 	//Find the FacilityModel By iD
 	FacilityModel getFacilityModelById(Integer id);
-	//找出总的记录条数
-	int getCountAll(String facilityCode,String stationCode,String name
-			,String materialNumber,String brand,String supplier,
-			String model);
+
+	/**
+	 *
+	 * @param facilityPageSearchDTO
+	 * @return
+	 */
+	int getCountAll(FacilityPageSearchDTO facilityPageSearchDTO);
 	List<FacilityModel> getFacilityByString(String facilityCode);
 }

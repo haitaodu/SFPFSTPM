@@ -1,6 +1,6 @@
 package com.smartflow.dao;
 
-import com.smartflow.dto.MaintenanceTaskPlan.*;
+import com.smartflow.dto.maintenancetaskplan.*;
 import com.smartflow.model.*;
 import com.smartflow.util.DTOToModelUtil;
 import com.smartflow.util.WorkPlanUtil;
@@ -158,7 +158,7 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 	
 		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
 		Session session = sessionFactory.openSession();
-		String sql = "select Id [key],Name label from tpm.MaintenanceItem where State = 1 Order By Name";
+		String sql = "select Id [key],Name label from tpm.maintenanceitem where State = 1 Order By Name";
 		try{
 			Query query = session.createSQLQuery(sql);
 			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
@@ -252,7 +252,7 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 	
 		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
 		Session session = sessionFactory.openSession();
-		String sql = "select Id [key],Name label from  tpm.MaintenanceItem where State = 1 Order By Name";
+		String sql = "select Id [key],Name label from  tpm.maintenanceitem where State = 1 Order By Name";
 		try{
 			Query query = session.createSQLQuery(sql);
 			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();

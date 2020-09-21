@@ -1,12 +1,10 @@
 package com.smartflow.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.transaction.Transactional;
-
+import com.smartflow.dto.facility.FacilityAddDTO;
+import com.smartflow.dto.facility.FacilityDetailDTO;
+import com.smartflow.dto.facility.FacilityEditeDTO;
+import com.smartflow.dto.facility.FacilityPageSearchDTO;
+import com.smartflow.model.*;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,87 +13,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.smartflow.dto.Facility.FacilityAddDTO;
-import com.smartflow.dto.Facility.FacilityDetailDTO;
-import com.smartflow.dto.Facility.FacilityEditeDTO;
-import com.smartflow.dto.Facility.FacilityPageDTO;
-import com.smartflow.model.BOMHeadModel;
-import com.smartflow.model.FacilityCurrentStatus;
-import com.smartflow.model.FacilityModel;
-import com.smartflow.model.Material;
-import com.smartflow.model.StationModel;
-import com.smartflow.model.SupplierModel;
-import com.smartflow.model.UserModel;
+import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author haita
+ */
 @Repository
 public class FacilityDaoImpl implements FacilityDao{
-@Autowired 
+final
 HibernateTemplate hibernateTemplate;
-@Autowired
+private final
 BOMHeadDao  bomHeadDao;
-@Override
+
+	@Autowired
+	public FacilityDaoImpl(HibernateTemplate hibernateTemplate, BOMHeadDao bomHeadDao) {
+		this.hibernateTemplate = hibernateTemplate;
+		this.bomHeadDao = bomHeadDao;
+	}
+
+	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
+		
 		return super.toString();
 	}
 	@Override
-	public List<FacilityPageDTO> getPagesByConditions(String facilityCode, String stationCode, String name,
-			String materialNumber, String brand, String supplier, String model,Integer pageSize,Integer pageIndex) {
-		// TODO Auto-generated method stub
+	public List<FacilityModel> getPagesByConditions(FacilityPageSearchDTO facilityPageSearchDTO) {
 		 Session session=hibernateTemplate.getSessionFactory().openSession();
 		try {
-			
-	   
 		String hql="FROM FacilityModel WHERE State!=-1";
-		if (facilityCode!=null && !"".equals(facilityCode)) {
-			hql += "and FacilityCode like '%"+facilityCode+"%' ";
-		}
-		if (stationCode!=null && !"".equals(stationCode)) {
-			hql += "and  StationId in (select S.id FROM StationModel AS S where StationNumber like '%"+stationCode+"%' )";
-		}
-		if (name!=null && !"".equals(name)) {
-			hql += "and Name like '%"+name+"%' ";
-		}
-		if (materialNumber!=null && !"".equals(materialNumber)) {
-			hql += "and BOMHeadId in (select B.Id from BOMHeadModel as B where MaterialId in (select "
-					+ "M.id from Material as M where MaterialNumber like '%"+materialNumber+"%'))" ;
-		}
-		if (brand!=null && !"".equals(brand)) {
-			hql += "and Brand like '%"+brand+"%' ";
-		}
-		if (supplier!=null && !"".equals(supplier)) {
-			hql += "and  SupplierId in (select S.id FROM SupplierModel as S where Code like '%"+supplier+"%' )";
-		}
-		if (model!=null && !"".equals(model)) {
-			hql += "and Model like '%"+model+"%' ";
-		}
-		Query query=session.createQuery(hql);
-		query.setFirstResult((pageIndex-1)*pageSize);
-		query.setMaxResults(pageSize);
-	    @SuppressWarnings("unused")
+		Query query=session.createQuery(parseToSearch(hql,facilityPageSearchDTO));
+		query.setFirstResult((facilityPageSearchDTO.getPageIndex()-1)*facilityPageSearchDTO.getPageSize());
+		query.setMaxResults(facilityPageSearchDTO.getPageSize());
+	    @SuppressWarnings("unchecked")
 	    List<FacilityModel> facilityModels=query.list();
-	     List<FacilityPageDTO> facilityPageDTOs=new ArrayList<>();
-	
-	for (FacilityModel facilityModel : facilityModels) {
-		//判空操作针对BOMHead,Station
-		String stationNumber=null;
-		String materialNumber01=null;
-		String suppliercode=null;
-		if (facilityModel.getStation()!=null) {
-			stationNumber=facilityModel.getStation().getStationNumber();
-		}
-		if(facilityModel.getBOMHead()!=null)
-		{	materialNumber01=hibernateTemplate.get(Material.class, facilityModel.getBOMHead().getMaterialId()).getMaterialNumber();
-		}
-		if (facilityModel.getSupplier()!=null) {
-			suppliercode=facilityModel.getSupplier().getCode();
-		}
-		facilityPageDTOs.add(new FacilityPageDTO(facilityModel.getId(),facilityModel.getFacilityCode(),facilityModel.getName(),stationNumber,
-				materialNumber01,
-				facilityModel.getBrand(),suppliercode,facilityModel.getModel()));
-	}
-	return facilityPageDTOs;
+	    return facilityModels;
 		} catch (Exception e) {
-			// TODO: handle exception
+
 			e.printStackTrace();
 		}finally{
 			session.close();
@@ -106,7 +62,7 @@ BOMHeadDao  bomHeadDao;
 
 	@Override
 	public FacilityDetailDTO getdetailById(Integer id) {
-		// TODO Auto-generated method stub
+		
 		FacilityModel facilityModel=hibernateTemplate.get(FacilityModel.class, id);
 		@SuppressWarnings("unchecked")
 		List<FacilityCurrentStatus> facilityCurrentStatusList=(List<FacilityCurrentStatus>)hibernateTemplate.findByNamedParam("From "
@@ -180,7 +136,7 @@ BOMHeadDao  bomHeadDao;
 
 	@Override
 	public FacilityEditeDTO gEditeDTOById(Integer id) {
-		// TODO Auto-generated method stub
+		
 		FacilityEditeDTO facilityEditeDTO=new FacilityEditeDTO();
 		FacilityModel facilityModel=hibernateTemplate.get(FacilityModel.class, id);
 		if (facilityModel==null) {
@@ -216,7 +172,7 @@ BOMHeadDao  bomHeadDao;
 	@Transactional
 	@Override
 	public void updateFacility(FacilityAddDTO facilityAddDTO) {
-		// TODO Auto-generated method stub
+		
 		FacilityModel facilityModel=new FacilityModel();
 		Date date=new Date();
 		//BOM列表的格式有待开发，先写死掉为1
@@ -243,7 +199,7 @@ BOMHeadDao  bomHeadDao;
 @Transactional
 	@Override
 	public void saveFacility(FacilityAddDTO facilityAddDTO) {
-		// TODO Auto-generated method stub
+		
 		FacilityModel facilityModel=new FacilityModel();
 		Date date=new Date();
 		//BOM列表的格式有待开发，先写死掉为1
@@ -268,7 +224,7 @@ BOMHeadDao  bomHeadDao;
 	}
 	@Override
 	public FacilityModel getFacilityModleByCode(String facilityCode) {
-		// TODO Auto-generated method stub
+		
 		List<FacilityModel> facilityModels=(List<FacilityModel>)hibernateTemplate.findByNamedParam("From FacilityModel Where FacilityCode=:facilityCode", "facilityCode", facilityCode);
 		if (facilityModels.size()==0) {
 			return null;
@@ -278,10 +234,10 @@ BOMHeadDao  bomHeadDao;
 	
 	@Override
 	public List<Map<String, Object>> getFacilityList() {
-		// TODO Auto-generated method stub
+		
 		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
 		Session session = sessionFactory.openSession();
-		String sql = "select Id [key],FacilityCode label from core.Facility where State = 1 Order By FacilityCode";
+		String sql = "select Id [key],FacilityCode label from core.facility where State = 1 Order By FacilityCode";
 		try{
 			Query query = session.createSQLQuery(sql);//.addScalar("key", StandardBasicTypes.INTEGER).addScalar("label", StandardBasicTypes.STRING);
 			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
@@ -294,45 +250,24 @@ BOMHeadDao  bomHeadDao;
 	}
 	@Override
 	public FacilityModel getFacilityModelById(Integer id) {
-		// TODO Auto-generated method stub
+		
 		return hibernateTemplate.get(FacilityModel.class, id);
 	}
 	@Override
-	public int getCountAll(String facilityCode, String stationCode, String name, String materialNumber, String brand,
-			String supplier, String model) {
-		// TODO Auto-generated method stub
+	public int getCountAll(FacilityPageSearchDTO facilityPageSearchDTO) {
+		
 		try {
 			String hql="select count(*) FROM FacilityModel WHERE State!=-1";
-			if (facilityCode!=null && !"".equals(facilityCode)) {
-				hql += "and FacilityCode like '%"+facilityCode+"%' ";
-			}
-			if (stationCode!=null && !"".equals(stationCode)) {
-				hql += "and  StationId in (select S.id FROM StationModel AS S where StationNumber like '%"+stationCode+"%' )";
-			}
-			if (name!=null && !"".equals(name)) {
-				hql += "and Name like '%"+name+"%' ";
-			}
-			if (materialNumber!=null && !"".equals(materialNumber)) {
-				hql += "and BOMHeadId in (select B.Id from BOMHeadModel as B where MaterialId in (select "
-						+ "M.id from Material as M where MaterialNumber like '%"+materialNumber+"%'))" ;
-			}
-			if (brand!=null && !"".equals(brand)) {
-				hql += "and Brand like '%"+brand+"%' ";
-			}
-			if (supplier!=null && !"".equals(supplier)) {
-				hql += "and  SupplierId in (select S.id FROM SupplierModel as S where Code like '%"+supplier+"%' )";
-			}
-			if (model!=null && !"".equals(model)) {
-				hql += "and Model like '%"+model+"%' ";
-			}
-			
-			List<Long> list=(List<Long>) hibernateTemplate.find(hql);
-			if(list!=null&&list.size()>0){
+
+
+			@SuppressWarnings("unchecked")
+			List<Long> list=(List<Long>) hibernateTemplate.find(parseToSearch(hql,facilityPageSearchDTO));
+			if(!list.isEmpty()){
 	            return list.get(0).intValue();
 	        }
 
 		} catch (Exception e) {
-			// TODO: handle exception
+			
 			e.printStackTrace();
 			return 0;
 		}
@@ -344,7 +279,7 @@ BOMHeadDao  bomHeadDao;
 	}
 	@Override
 	public List<FacilityModel> getFacilityByString(String facilityCode) {
-		// TODO Auto-generated method stub
+		
 		
 		@SuppressWarnings("unchecked")
 		List<FacilityModel> facilityModels=(List<FacilityModel>) hibernateTemplate.
@@ -352,4 +287,38 @@ BOMHeadDao  bomHeadDao;
 		return facilityModels;
 	}
 
+
+	/**
+	 * 填充分页请求参数
+	 * @param hql 分页请求数据
+	 * @param facilityPageSearchDTO 分页请求参数dto
+	 * @return 分页查询语句
+	 */
+	private  String parseToSearch(String hql, FacilityPageSearchDTO facilityPageSearchDTO
+								  )
+	{
+		if (facilityPageSearchDTO.getFacilityCode()!=null && !"".equals(facilityPageSearchDTO.getFacilityCode())) {
+			hql += "and FacilityCode like '%"+facilityPageSearchDTO.getFacilityCode()+"%' ";
+		}
+		if (facilityPageSearchDTO.getStationNumber()!=null && !"".equals(facilityPageSearchDTO.getStationNumber())) {
+			hql += "and  StationId in (select S.id FROM StationModel AS S where StationNumber like '%"+facilityPageSearchDTO.getStationNumber()+"%' )";
+		}
+		if (facilityPageSearchDTO.getName()!=null && !"".equals(facilityPageSearchDTO.getName())) {
+			hql += "and Name like '%"+facilityPageSearchDTO.getName()+"%' ";
+		}
+		if (facilityPageSearchDTO.getMaterialNumber()!=null && !"".equals(facilityPageSearchDTO.getMaterialNumber())) {
+			hql += "and BOMHeadId in (select B.Id from BOMHeadModel as B where MaterialId in (select "
+					+ "M.id from Material as M where MaterialNumber like '%"+facilityPageSearchDTO.getMaterialNumber()+"%'))" ;
+		}
+		if (facilityPageSearchDTO.getBrand()!=null && !"".equals(facilityPageSearchDTO.getBrand())) {
+			hql += "and Brand like '%"+facilityPageSearchDTO.getBrand()+"%' ";
+		}
+		if (facilityPageSearchDTO.getSupplierNumber()!=null && !"".equals(facilityPageSearchDTO.getSupplierNumber())) {
+			hql += "and  SupplierId in (select S.id FROM SupplierModel as S where Code like '%"+facilityPageSearchDTO.getSupplierNumber()+"%' )";
+		}
+		if (facilityPageSearchDTO.getModel()!=null && !"".equals(facilityPageSearchDTO.getModel())) {
+			hql += "and Model like '%"+facilityPageSearchDTO.getModel()+"%' ";
+		}
+		return hql;
+	}
 }

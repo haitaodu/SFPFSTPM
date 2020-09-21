@@ -1,8 +1,8 @@
 package com.smartflow.util;
 
-import com.smartflow.dto.MaintenanceTaskPlan.PeriodicTypeDTO;
-import com.smartflow.dto.MaintenanceTaskPlan.TaskPlanEditeOutputDTO;
-import com.smartflow.dto.MaintenanceTaskPlan.TaskPlanSaveOutputDTO;
+import com.smartflow.dto.maintenancetaskplan.PeriodicTypeDTO;
+import com.smartflow.dto.maintenancetaskplan.TaskPlanEditeOutputDTO;
+import com.smartflow.dto.maintenancetaskplan.TaskPlanSaveOutputDTO;
 import com.smartflow.model.*;
 
 import java.util.Calendar;

@@ -3,7 +3,7 @@ package com.smartflow.model;
 import javax.persistence.*;
 import java.util.Date;
 @Entity
-@Table(name = "core.Facility")
+@Table(name = "core.facility")
 public class FacilityModel {
 
     Integer Id;

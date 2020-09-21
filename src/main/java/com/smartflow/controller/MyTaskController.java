@@ -1,44 +1,8 @@
 package com.smartflow.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import com.smartflow.util.ArrayUtils;
-import org.apache.commons.io.FileUtils;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-
-import com.smartflow.dto.AddMaintenanceRecordInitDTO;
-import com.smartflow.dto.AddMaintenanceRecordInputDTO;
-import com.smartflow.dto.AssignmentTaskInitOutputDTO;
+import com.smartflow.dto.*;
 import com.smartflow.dto.AssignmentTaskInitOutputDTO.AssignmentTaskInitOutputRowDTO;
-import com.smartflow.dto.AssignmentTaskInputDTO;
-import com.smartflow.dto.RoleGroupTaskListInputDTO;
 import com.smartflow.dto.RoleGroupTaskListInputDTO.TaskIdList;
-import com.smartflow.dto.RoleGroupTaskListOutputRowDTO;
-import com.smartflow.dto.StateAndDeviceInitDTO;
-import com.smartflow.dto.StateAndRoleGroupInitDTO;
-import com.smartflow.dto.TaskDetailOutputDTO;
-import com.smartflow.dto.TaskListInputDTO;
-import com.smartflow.dto.TaskListOutputDTO;
 import com.smartflow.model.MeasurementDataRecord;
 import com.smartflow.model.PMActionRecord;
 import com.smartflow.model.UserModel;
@@ -48,6 +12,20 @@ import com.smartflow.service.MyTaskService;
 import com.smartflow.util.ExportCsvUtil;
 import com.smartflow.util.PropertyUtil;
 import com.smartflow.util.StringUtil;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 /**
  * 我的任务
  * @author smartflow
@@ -74,8 +52,8 @@ public class MyTaskController extends BaseController{
 	 * @return
 	 */
 	@CrossOrigin(origins="*",maxAge=3600)
-	@RequestMapping(value="/GetStateAndRoleGroupInit/{userId}",method=RequestMethod.GET)
-	public Map<String,Object> getStateAndRoleGroupInit(@PathVariable Integer userId) {
+	@GetMapping (value="/GetStateAndRoleGroupInit")
+	public Map<String,Object> getStateAndRoleGroupInit() {
 		Map<String, Object> json = new HashMap<>();
 		StateAndRoleGroupInitDTO stateAndRoleGroupInitDTO = new StateAndRoleGroupInitDTO();
 		List<Map<String,Object>> stateList = PropertyUtil.getStautsList();
@@ -98,7 +76,6 @@ public class MyTaskController extends BaseController{
 	/**
 	 * 通过开始时间、结束时间、状态、角色组查询我的角色组任务清单列表
 	 * @param roleGroupTaskListConditionDTO
-	 * @return
 	 */
 	@CrossOrigin(origins="*",maxAge=3600)
 	@PostMapping (value="/GetMyRoleGroupTaskListByConditon")
@@ -140,7 +117,6 @@ public class MyTaskController extends BaseController{
 			}			
 			json = this.setJson(200, "领取任务成功！", null);
 		}catch(Exception e){
-			e.printStackTrace();
 			logger.error(e);
 			json = this.setJson(0, "领取任务失败："+e.getMessage(), -1);
 		}
@@ -152,7 +128,7 @@ public class MyTaskController extends BaseController{
 	 * @return
 	 */
 	@CrossOrigin(origins="*",maxAge=3600)
-	@RequestMapping(value="/AssignmentTaskInit",method=RequestMethod.POST)
+	@PostMapping(value="/AssignmentTaskInit")
 	public Map<String,Object> AssignmentTaskInit(@RequestBody TaskIdList taskIdList){
 		Map<String,Object> json = new HashMap<String,Object>();
 		AssignmentTaskInitOutputDTO assignmentTaskInitOutputDTO = new AssignmentTaskInitOutputDTO();
@@ -188,7 +164,6 @@ public class MyTaskController extends BaseController{
 			assignmentTaskInitOutputDTO.setRoleGroupList(roleList);
 			json = this.setJson(200, "分配任务初始化成功！", assignmentTaskInitOutputDTO);
 		}catch(Exception e){
-			e.printStackTrace();
 			logger.error(e);
 			json = this.setJson(0, "分配任务初始化失败:"+e.getMessage(), -1);	
 		}		
@@ -203,7 +178,7 @@ public class MyTaskController extends BaseController{
 	 */
 	@CrossOrigin(origins="*",maxAge=3600)
 	@PostMapping (value="/AssignmentTask")
-	public Map<String,Object> AssignmentTask(@RequestBody AssignmentTaskInputDTO assignmentTaskInputDTO){
+	public Map<String,Object> assignmentTask(@RequestBody AssignmentTaskInputDTO assignmentTaskInputDTO){
 		Map<String,Object> json = new HashMap<String,Object>();
 		try{
 			for (Integer workOrderItemId : assignmentTaskInputDTO.getTaskIdList()) {

@@ -3,14 +3,11 @@ package com.smartflow.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.smartflow.dto.MaintenanceItem.MaintenanceItemPageDTO;
-import com.smartflow.dto.MaintenanceTaskPlan.MaintenancePreviewDTO;
-import com.smartflow.dto.MaintenanceTaskPlan.MaintenanceTaskPlanEditeDTO;
-import com.smartflow.dto.MaintenanceTaskPlan.MaintenanceTaskPlanPageDTO;
-import com.smartflow.dto.MaintenanceTaskPlan.MaintenanceTaskPlanStepDTO;
-import com.smartflow.dto.MaintenanceTaskPlan.TaskPlanEditeOutputDTO;
-import com.smartflow.dto.MaintenanceTaskPlan.TaskPlanSaveOutputDTO;
-import com.smartflow.dto.MaintenanceTaskPlan.TaskPlanStepOutPutDTO;
+import com.smartflow.dto.maintenancetaskplan.MaintenancePreviewDTO;
+import com.smartflow.dto.maintenancetaskplan.MaintenanceTaskPlanPageDTO;
+import com.smartflow.dto.maintenancetaskplan.MaintenanceTaskPlanStepDTO;
+import com.smartflow.dto.maintenancetaskplan.TaskPlanEditeOutputDTO;
+import com.smartflow.dto.maintenancetaskplan.TaskPlanSaveOutputDTO;
 import com.smartflow.model.Reminder;
 import com.smartflow.model.WorkPlan;
 
@@ -40,7 +37,7 @@ List<Map<String, Object>> getRoleList();
 List<Map<String, Object>> getTypeList();
 //According Id get the workplan
 WorkPlan getWorkPlanById(Integer id);
-//Genenral Initialize the MaintenanceItem
+//Genenral Initialize the maintenanceitem
 List<Map<String, Object>> getStepList();
 //Generally save the data for workplan and workitems
 Boolean saveData(TaskPlanSaveOutputDTO taskPlanSaveOutPutDTO);

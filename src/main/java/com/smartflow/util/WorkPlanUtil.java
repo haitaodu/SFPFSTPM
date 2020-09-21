@@ -2,7 +2,7 @@ package com.smartflow.util;
 
 import java.util.List;
 
-import com.smartflow.dto.MaintenanceTaskPlan.TaskPlanStepOutPutDTO;
+import com.smartflow.dto.maintenancetaskplan.TaskPlanStepOutPutDTO;
 import com.smartflow.model.WorkPlan;
 
 public interface WorkPlanUtil {

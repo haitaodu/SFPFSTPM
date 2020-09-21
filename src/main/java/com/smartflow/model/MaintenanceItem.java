@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 @Entity
-@Table(name="tpm.MaintenanceItem")
+@Table(name="tpm.maintenanceitem")
 public class MaintenanceItem {
 	private Integer Id;
 	private String Name;

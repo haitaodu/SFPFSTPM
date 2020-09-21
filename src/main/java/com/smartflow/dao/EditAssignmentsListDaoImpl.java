@@ -104,16 +104,16 @@ public class EditAssignmentsListDaoImpl implements EditAssignmentsListDao {
 	}
 
 //	@Override
-//	public MaintenanceItem getMaintenanceItemByMaintenanceName(String maintenanceItemName) {
-//		//String hql = "select m.id as id,m.name as name from MaintenanceItem m where m.name = '"+maintenanceItemName+"'";
-//		String sql = "select * from tpm.MaintenanceItem where Name = '"+maintenanceItemName+"'";
+//	public maintenanceitem getMaintenanceItemByMaintenanceName(String maintenanceItemName) {
+//		//String hql = "select m.id as id,m.name as name from maintenanceitem m where m.name = '"+maintenanceItemName+"'";
+//		String sql = "select * from tpm.maintenanceitem where Name = '"+maintenanceItemName+"'";
 //		Session session = sessionFactory.openSession();
 //		try{
 //			//Query query = session.createQuery(hql);
 //			Query query = session.createSQLQuery(sql);
-//			query.setResultTransformer(Transformers.aliasToBean(MaintenanceItem.class));
-//			return query.uniqueResult() == null ? null : (MaintenanceItem) query.uniqueResult();
-//			//return (MaintenanceItem) query.setResultTransformer(Transformers.aliasToBean(MaintenanceItem.class)).uniqueResult();
+//			query.setResultTransformer(Transformers.aliasToBean(maintenanceitem.class));
+//			return query.uniqueResult() == null ? null : (maintenanceitem) query.uniqueResult();
+//			//return (maintenanceitem) query.setResultTransformer(Transformers.aliasToBean(maintenanceitem.class)).uniqueResult();
 //		}catch(Exception e){
 //			e.printStackTrace();
 //			return null;
