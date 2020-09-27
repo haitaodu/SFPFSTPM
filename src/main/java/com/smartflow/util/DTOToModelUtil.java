@@ -1,12 +1,15 @@
 package com.smartflow.util;
 
+import com.smartflow.cron.util.DateUtil;
 import com.smartflow.dto.maintenancetaskplan.PeriodicTypeDTO;
 import com.smartflow.dto.maintenancetaskplan.TaskPlanEditeOutputDTO;
 import com.smartflow.dto.maintenancetaskplan.TaskPlanSaveOutputDTO;
 import com.smartflow.model.*;
+import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author haita
@@ -24,7 +27,8 @@ public class DTOToModelUtil{
 		role.setId(taskPlanSaveOutPutDTO.getMainRoleId());
 		workPlan.setRole(role);
 		workPlan.setState(taskPlanSaveOutPutDTO.getState());
-		workPlan.setType(taskPlanSaveOutPutDTO.getPeriodicType()==true ? 2:1);
+//		workPlan.setType(taskPlanSaveOutPutDTO.getPeriodicType()==true ? 2:1);
+		workPlan.setType(taskPlanSaveOutPutDTO.getPeriodicTypeList().get(0));
 		workPlan.setVersion(1);
 		return workPlan;
 	}
@@ -45,10 +49,42 @@ public class DTOToModelUtil{
 		workPlan.setRole(role);
 		workPlan.setState(taskPlanEditeOutputDTO.getState());
 
-		workPlan.setType(taskPlanEditeOutputDTO.isPeriodicType() == true ? 2 : 1);
+//		workPlan.setType(taskPlanEditeOutputDTO.isPeriodicType() == true ? 2 : 1);
+		workPlan.setType(taskPlanEditeOutputDTO.getPeriodicTypeList().get(0));
 		workPlan.setVersion(1);
 		workPlan.setId(taskPlanEditeOutputDTO.getId());
 		return workPlan;
+	}
+
+	public static PeriodicTypeDTO periodicTypeDTOToPeriodicType(List<Integer> periodicTypeDTOs, String temporaryDateStr){
+		Integer periodicType = periodicTypeDTOs.get(0);
+		String cronExpression = "";
+		if (periodicType == 1) {//临时的
+			Date temporaryDate = DateUtil.toDate(temporaryDateStr, "yyyy-MM-dd HH:mm:ss");
+			int year = DateUtil.year(temporaryDate);
+			int month = DateUtil.month(temporaryDate);
+			int day = DateUtil.day(temporaryDate);
+			int hour = DateUtil.hour(temporaryDate);
+			int minute = DateUtil.minute(temporaryDate);
+			int second = DateUtil.second(temporaryDate);
+			cronExpression = second + " " + minute + " " + hour + " " + day + " " + month + " " + "? " + year + "-" + year;
+		} else if (periodicType == 2) {//周期性的
+			Integer monthWeek = periodicTypeDTOs.get(1);
+			Integer number = periodicTypeDTOs.get(2);
+			if (monthWeek == 1) {//每周
+				if (number == 7) {//周日
+					cronExpression = "0 0 0 ? * " + 1 + " *";
+				} else {
+					cronExpression = "0 0 0 ? * " + (monthWeek + 1) + " *";
+				}
+			} else if (monthWeek == 2) {//每月
+				cronExpression = "0 0 0 " + number + " * ?";
+			}
+		}
+		PeriodicTypeDTO periodicTypeDTO = new PeriodicTypeDTO();
+		periodicTypeDTO.setPeriodicName(StringUtils.collectionToDelimitedString(periodicTypeDTOs, ","));
+		periodicTypeDTO.setCRONExpression(cronExpression);
+		return periodicTypeDTO;
 	}
 
 	public static Reminder periodicTypeDTOToReminder(PeriodicTypeDTO periodicTypeDTO)

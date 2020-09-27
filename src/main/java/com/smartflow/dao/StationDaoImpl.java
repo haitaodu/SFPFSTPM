@@ -289,5 +289,67 @@ public class StationDaoImpl implements StationDao{
 //	}
 
 
+	@Override
+	public List<Map<String, Object>> getAreaList() {
+		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
+		Session session = sessionFactory.openSession();
+		String sql = "select Id [key],concat(AreaNumber,'('+Description+')') label from core.Area where State = 1";
+		try{
+			Query query = session.createSQLQuery(sql);
+			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally{
+			session.close();
+		}
+	}
 
+	@Override
+	public List<Map<String, Object>> getCellListByAreaId(Integer areaId) {
+		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
+		Session session = sessionFactory.openSession();
+		String sql = "select Id [key],concat(CellNumber,'('+Description+')') label from core.Cell where State = 1 and AreaId = "+areaId;
+		try{
+			Query query = session.createSQLQuery(sql);
+			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally{
+			session.close();
+		}
+	}
+
+	@Override
+	public List<Map<String, Object>> getStationGroupListByCellId(Integer cellId) {
+		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
+		Session session = sessionFactory.openSession();
+		String sql = "select Id [key],concat(GroupNumber,'('+Description+')') label from core.StationGroup where State = 1 and CellId = "+cellId+" order by GroupNumber";
+		try{
+			Query query = session.createSQLQuery(sql);
+			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally{
+			session.close();
+		}
+	}
+
+	@Override
+	public List<Map<String, Object>> getStationListByStationGroupId(Integer stationGroupId) {
+		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
+		Session session = sessionFactory.openSession();
+		String sql = "select Id [key],concat(StationNumber,'('+Name+')') label from core.Station where State = 1 and Id in (select StationtId from core.Station_StationGroup where StationGroupId = "+stationGroupId+") order by StationNumber";
+		try{
+			Query query = session.createSQLQuery(sql);
+			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally{
+			session.close();
+		}
+	}
 }

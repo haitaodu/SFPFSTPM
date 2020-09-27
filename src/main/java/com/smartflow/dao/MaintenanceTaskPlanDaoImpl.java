@@ -272,7 +272,7 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 			WorkPlan workPlan=	DTOToModelUtil.TaskPlanSaveOutputDTOModel(taskPlanSaveOutPutDTO);
 			hibernateTemplate.save(workPlan);
 
-			workPlanUtil.saveWorkItemRelatedWorkPlan(taskPlanSaveOutPutDTO.getTaskPlanStepOutPutDTOs(), workPlan);
+//			workPlanUtil.saveWorkItemRelatedWorkPlan(taskPlanSaveOutPutDTO.getTaskPlanStepOutPutDTOs(), workPlan);
 
 		} catch (Exception e) {
 			return false;
@@ -387,14 +387,16 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 				}
 				hibernateTemplate.delete(tpmWorkPlan_Reminder);
 			}
+			for (Reminder reminder : reminders) {
+				hibernateTemplate.delete(reminder);
+			}
 			return true;
 		} catch (Exception e) {
 			return false;
 		}
 	}
 
-
-
+	/*
 	@Override
 	public Boolean addWorkItemByTaskPlanDTO(TaskPlanEditeOutputDTO taskPlanEditeOutPutDTO,WorkPlan workPlan) {
 	
@@ -455,7 +457,9 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 		}
 
 	}
+	*/
 
+	/*
 	@Override
 	public Boolean addWorkItemByTaskPlanDTO(TaskPlanSaveOutputDTO taskPlanEditeOutPutDTO, WorkPlan workPlan) {
 		try {
@@ -514,6 +518,7 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 			return false;
 		}
 	}
+	*/
 @SuppressWarnings("unchecked")
 	@Override
 	public List<WorkPlan> getWorkPlansByString(String workplanforname) {

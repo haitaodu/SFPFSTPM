@@ -1,6 +1,7 @@
 package com.smartflow.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.smartflow.common.enumpack.PeriodicType;
 import com.smartflow.dto.maintenancetaskplan.*;
 import com.smartflow.dto.StateAndPeriodicTypeInitDTO;
 import com.smartflow.model.FacilityModel;
@@ -11,7 +12,9 @@ import com.smartflow.service.MaintenanceTaskPlanService;
 import com.smartflow.service.StationService;
 import com.smartflow.util.KeyLabelToLabel;
 import com.smartflow.util.KeyLabelToLabelImpl;
+import com.smartflow.util.PropertyUtil;
 import com.smartflow.util.ReadDataUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -20,11 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 /**
  * @author haita
@@ -225,12 +226,12 @@ public class MaintenanceTaskPlanController extends  BaseController {
         Map<String, Object> json = new HashMap<String, Object>();
         Map<String, Object> map = new HashMap<String, Object>();
      
-        map.put("Tdto", maintenanceTaskPlanService.getStepByWorkPlanId(Id));
+//        map.put("Tdto", maintenanceTaskPlanService.getStepByWorkPlanId(Id));
         WorkPlan workPlan=maintenanceTaskPlanService.getWorkPlanById(Id);
         TaskPlanHeadDto taskPlanHeadDto=maintenanceTaskPlanService.geTaskPlanHeadDto(workPlan);
-      
-        
-        map.put("TargetFacilityList", facilityService.getFacilityList());
+
+        //map.put("TargetFacilityList", facilityService.getFacilityList());
+        map.put("TargetFacilityList",stationService.getFacilityList());
         map.put("RoleList",maintenanceTaskPlanService.getRoleList());
         map.put("PlanName", taskPlanHeadDto.getPlanName());
         map.put("targetFacility", taskPlanHeadDto.getTargetFacility());
@@ -239,12 +240,18 @@ public class MaintenanceTaskPlanController extends  BaseController {
         map.put("MainRole", taskPlanHeadDto.getMainRole());
         map.put("Id", Id);
         
-        //周期类型
-        map.put("PeriodicType", true);
-        List<PeriodicTypeDTO> periodcTypeList = new ArrayList<>();
 
-        periodcTypeList=maintenanceTaskPlanService.getReminderList(Id);
-        map.put("PeriodcTypeList", periodcTypeList);
+        List<PeriodicTypeDTO> periodicTypeList = maintenanceTaskPlanService.getReminderList(Id);
+        List<Integer> PeriodicType = null;
+        if(CollectionUtils.isNotEmpty(periodicTypeList)){
+            String periodicType = periodicTypeList.get(0).getPeriodicName();
+//            String[] periodicTypeArray = periodicType.split(",");
+//            PeriodicType = Arrays.asList(periodicTypeArray);
+            PeriodicType = Arrays.asList(periodicType.split(",")).stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
+        }
+        //周期类型
+        map.put("PeriodicType", PeriodicType);
+        map.put("PeriodicTypeList", PropertyUtil.getPeriodicTypeList());
         try {
             json = this.setJson(200, "Success", map);
         } catch (Exception e) {
@@ -261,8 +268,10 @@ public class MaintenanceTaskPlanController extends  BaseController {
         ReadDataUtil.paramData(request);
         Map<String, Object> json = new HashMap<String, Object>();
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("TargetFacilityList",stationService.getStationGroup());
+
+        map.put("TargetFacilityList",stationService.getFacilityList());
         map.put("RoleList",maintenanceTaskPlanService.getRoleList());
+        map.put("PeriodicList", PropertyUtil.getPeriodicTypeList());
         try {
             json = this.setJson(200, "Success", map);
         } catch (Exception e) {

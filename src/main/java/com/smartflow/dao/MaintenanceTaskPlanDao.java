@@ -57,9 +57,9 @@ Boolean saveWorkPlanData(WorkPlan workPlan);
 //del TPMWorkPlan_Reminder And WorkPlanExcutionState by workplanId
 Boolean delTPMWP_RemAndWPExcutionStateByWPId(Integer workPlanId);
 //add WorkItem By taskPlanEditeOutPutDTO
-Boolean addWorkItemByTaskPlanDTO(TaskPlanEditeOutputDTO   taskPlanEditeOutPutDTO,WorkPlan workPlan);
+//Boolean addWorkItemByTaskPlanDTO(TaskPlanEditeOutputDTO   taskPlanEditeOutPutDTO,WorkPlan workPlan);
 //add WorkItem By taskPlanSaveOutPutDTO
-Boolean addWorkItemByTaskPlanDTO(TaskPlanSaveOutputDTO   taskPlanEditeOutPutDTO,WorkPlan workPlan);
+//Boolean addWorkItemByTaskPlanDTO(TaskPlanSaveOutputDTO   taskPlanEditeOutPutDTO,WorkPlan workPlan);
 //find the workplans,according string for workplan name
 List<WorkPlan> getWorkPlansByString(String workplanforname);
 }

@@ -125,4 +125,12 @@ public interface StationService {
 	 * @return
 	 */
 	public List<String> getStationGroupNameByStationId(Integer stationId);
+
+	/**
+	 * 获取目标设备下拉框（线体->岛区->工作站组->工作站）
+	 * @return
+	 */
+	public List<Map<String,Object>> getFacilityList();
+
+
 }

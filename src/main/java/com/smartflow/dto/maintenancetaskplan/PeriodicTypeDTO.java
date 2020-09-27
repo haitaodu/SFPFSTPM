@@ -21,9 +21,6 @@ public class PeriodicTypeDTO {
 	public void setKey(String key) {
 		this.key = key;
 	}
-	
-    
-
 	@JsonProperty("PeriodicName")
 	public String getPeriodicName() {
 		return PeriodicName;

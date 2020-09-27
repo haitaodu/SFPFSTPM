@@ -1,5 +1,6 @@
 package com.smartflow.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,5 +127,21 @@ public class StationServiceImpl implements StationService {
 		return stationDao.getStationGroupNameByStationId(stationId);
 	}
 
-	
+	@Override
+	public List<Map<String, Object>> getFacilityList() {
+		List<Map<String,Object>> areaList = stationDao.getAreaList();
+		for (Map<String,Object> area:areaList) {
+			List<Map<String,Object>> cellList = stationDao.getCellListByAreaId(Integer.parseInt(area.get("key").toString()));
+			area.put("children", cellList);
+			for (Map<String,Object> cell:cellList) {
+				List<Map<String,Object>> stationGroupList = stationDao.getStationGroupListByCellId(Integer.parseInt(cell.get("key").toString()));
+				cell.put("children", stationGroupList);
+				for (Map<String,Object> stationGroup:stationGroupList) {
+					List<Map<String,Object>> stationList = stationDao.getStationListByStationGroupId(Integer.parseInt(stationGroup.get("key").toString()));
+					stationGroup.put("children", stationList);
+				}
+			}
+		}
+		return areaList;
+	}
 }

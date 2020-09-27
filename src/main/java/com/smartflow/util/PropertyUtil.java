@@ -82,18 +82,18 @@ public class PropertyUtil {
 	 * 周期类型下拉框
 	 * @return
 	 */
-	public static List<Map<String,Object>> getPeriodicTypeList(){
-		List<Map<String, Object>> periodicTypeList = new ArrayList<>();
-		Map<String, Object> periodicTypeMap1 = new HashMap<>();
-		periodicTypeMap1.put("key", 1);
-		periodicTypeMap1.put("label", "临时的");
-		Map<String, Object> periodicTypeMap2 = new HashMap<>();
-		periodicTypeMap2.put("key", 2);
-		periodicTypeMap2.put("label", "周期性的");
-		periodicTypeList.add(periodicTypeMap1);
-		periodicTypeList.add(periodicTypeMap2);
-		return periodicTypeList;
-	}
+//	public static List<Map<String,Object>> getPeriodicTypeList(){
+//		List<Map<String, Object>> periodicTypeList = new ArrayList<>();
+//		Map<String, Object> periodicTypeMap1 = new HashMap<>();
+//		periodicTypeMap1.put("key", 1);
+//		periodicTypeMap1.put("label", "临时的");
+//		Map<String, Object> periodicTypeMap2 = new HashMap<>();
+//		periodicTypeMap2.put("key", 2);
+//		periodicTypeMap2.put("label", "周期性的");
+//		periodicTypeList.add(periodicTypeMap1);
+//		periodicTypeList.add(periodicTypeMap2);
+//		return periodicTypeList;
+//	}
 	/**
 	 * 根据周期类型id查询周期类型
 	 * @param periodicTypeId
@@ -148,5 +148,71 @@ public class PropertyUtil {
 			measumentCategoryId = 2;
 		}
 		return measumentCategoryId;
+	}
+
+	public static List<Map<String,Object>> getPeriodicTypeList(){
+		List<Map<String,Object>> periodicList = new ArrayList<>();
+		Map<String,Object> periodicMap = new HashMap<>();
+		List<Map<String,Object>> childrenList = new ArrayList<>();
+		Map<String,Object> childrenMap = new HashMap<>();
+		List<Map<String,Object>> weekChildrenList = new ArrayList<>();
+		Map<String,Object> weekMap = new HashMap<>();
+		weekMap.put("key", 1);
+		weekMap.put("label", "周一");
+		weekChildrenList.add(weekMap);
+		weekMap = new HashMap<>();
+		weekMap.put("key", 2);
+		weekMap.put("label", "周二");
+		weekChildrenList.add(weekMap);
+		weekMap = new HashMap<>();
+		weekMap.put("key", 3);
+		weekMap.put("label", "周三");
+		weekChildrenList.add(weekMap);
+		weekMap = new HashMap<>();
+		weekMap.put("key", 4);
+		weekMap.put("label", "周四");
+		weekChildrenList.add(weekMap);
+		weekMap = new HashMap<>();
+		weekMap.put("key", 5);
+		weekMap.put("label", "周五");
+		weekChildrenList.add(weekMap);
+		weekMap = new HashMap<>();
+		weekMap.put("key", 6);
+		weekMap.put("label", "周六");
+		weekChildrenList.add(weekMap);
+		weekMap = new HashMap<>();
+		weekMap.put("key", 7);
+		weekMap.put("label", "周日");
+		weekChildrenList.add(weekMap);
+		periodicMap.put("key", 1);
+		periodicMap.put("label", "临时的");
+		periodicList.add(periodicMap);
+
+		List<Map<String,Object>> monthChildrenList = new ArrayList<>();
+		int i = 1;
+		while(i <= 31){
+			Map<String,Object> monthMap = new HashMap<>();
+			monthMap.put("key", i);
+			monthMap.put("label", i+"号");
+			monthChildrenList.add(monthMap);
+			i ++;
+		}
+
+		childrenMap.put("key", 1);
+		childrenMap.put("label", "每周");
+		childrenMap.put("children", weekChildrenList);
+		childrenList.add(childrenMap);
+		childrenMap = new HashMap<>();
+		childrenMap.put("key", 2);
+		childrenMap.put("label", "每月");
+		childrenMap.put("children", monthChildrenList);
+		childrenList.add(childrenMap);
+
+		periodicMap = new HashMap<>();
+		periodicMap.put("key", 2);
+		periodicMap.put("label", "周期性的");
+		periodicMap.put("children", childrenList);
+		periodicList.add(periodicMap);
+		return periodicList;
 	}
 }

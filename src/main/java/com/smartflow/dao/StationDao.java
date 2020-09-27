@@ -127,4 +127,31 @@ public interface StationDao {
 	 * @return
 	 */
 	public List<String> getStationGroupNameByStationId(Integer stationId);
+
+	/**
+	 * 获取线体
+	 * @return
+	 */
+	public List<Map<String,Object>> getAreaList();
+
+	/**
+	 * 根据线体id获取岛区
+	 * @param areaId
+	 * @return
+	 */
+	public List<Map<String,Object>> getCellListByAreaId(Integer areaId);
+
+	/**
+	 * 根据岛区获取工作站组
+	 * @param cellId
+	 * @return
+	 */
+	public List<Map<String,Object>> getStationGroupListByCellId(Integer cellId);
+
+	/**
+	 * 根据工作站组获取工作站
+	 * @param stationGroupId
+	 * @return
+	 */
+	public List<Map<String,Object>> getStationListByStationGroupId(Integer stationGroupId);
 } 
