@@ -15,13 +15,13 @@ import java.util.List;
  * @author haita
  */
 public class DTOToModelUtil{
-	public static WorkPlan TaskPlanSaveOutputDTOModel(TaskPlanSaveOutputDTO taskPlanSaveOutPutDTO) {
+	public static WorkPlan TaskPlanSaveOutputDTOModel(TaskPlanSaveOutputDTO taskPlanSaveOutPutDTO,String facilityId) {
 		WorkPlan workPlan=new WorkPlan();
 		workPlan.setCreationDateTime(new Date());
 		workPlan.setCreatorId(10);
 		workPlan.setEditDateTime(new Date());
 		workPlan.setEditorId(10);
-		workPlan.setFacilityId(taskPlanSaveOutPutDTO.getTargetFacilityId());
+//		workPlan.setTargetFacilityId(taskPlanSaveOutPutDTO.getTargetFacilityId());
 		workPlan.setName(taskPlanSaveOutPutDTO.getPlanName());
 		Role role=new Role();
 		role.setId(taskPlanSaveOutPutDTO.getMainRoleId());
@@ -30,6 +30,8 @@ public class DTOToModelUtil{
 //		workPlan.setType(taskPlanSaveOutPutDTO.getPeriodicType()==true ? 2:1);
 		workPlan.setType(taskPlanSaveOutPutDTO.getPeriodicTypeList().get(0));
 		workPlan.setVersion(1);
+		workPlan.setMaintenanceItemId(taskPlanSaveOutPutDTO.getMaintenanceItemId());
+		workPlan.setFacilityId(facilityId);
 		return workPlan;
 	}
 
@@ -42,7 +44,7 @@ public class DTOToModelUtil{
 		workPlan.setCreatorId(10);
 		workPlan.setEditDateTime(new Date());
 		workPlan.setEditorId(10);
-		workPlan.setFacilityId(taskPlanEditeOutputDTO.getTargetFacilityId());
+		workPlan.setTargetFacilityId(taskPlanEditeOutputDTO.getTargetFacilityId());
 		workPlan.setName(taskPlanEditeOutputDTO.getPlanName());
 		Role role=new Role();
 		role.setId(taskPlanEditeOutputDTO.getMainRoleId());
@@ -60,7 +62,7 @@ public class DTOToModelUtil{
 		Integer periodicType = periodicTypeDTOs.get(0);
 		String cronExpression = "";
 		if (periodicType == 1) {//临时的
-			Date temporaryDate = DateUtil.toDate(temporaryDateStr, "yyyy-MM-dd HH:mm:ss");
+			Date temporaryDate = DateUtil.toDate(temporaryDateStr, "yyyy-MM-dd");
 			int year = DateUtil.year(temporaryDate);
 			int month = DateUtil.month(temporaryDate);
 			int day = DateUtil.day(temporaryDate);
@@ -73,9 +75,9 @@ public class DTOToModelUtil{
 			Integer number = periodicTypeDTOs.get(2);
 			if (monthWeek == 1) {//每周
 				if (number == 7) {//周日
-					cronExpression = "0 0 0 ? * " + 1 + " *";
+					cronExpression = "0 0 0 ? * " + 1;// + " *"
 				} else {
-					cronExpression = "0 0 0 ? * " + (monthWeek + 1) + " *";
+					cronExpression = "0 0 0 ? * " + (monthWeek + 1);
 				}
 			} else if (monthWeek == 2) {//每月
 				cronExpression = "0 0 0 " + number + " * ?";

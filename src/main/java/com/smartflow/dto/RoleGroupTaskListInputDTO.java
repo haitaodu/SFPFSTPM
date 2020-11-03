@@ -9,9 +9,12 @@ public class RoleGroupTaskListInputDTO {
 	private String StartDateTime;//开始时间
 	private String EndDateTime;//结束时间
 	private List<Map<String,Object>> State;//状态
-	private Integer RoleGroupId;//角色组id
+//	private Integer RoleGroupId;//角色组id
+	private List<Integer> RoleGroupId;//角色组
 	private Integer PageIndex;
 	private Integer PageSize;
+	private String AssignmentTaskSheet;//任务单号
+	private List<Integer> FacilityIdList;//设备
 	@JsonProperty("UserId")
 	public Integer getUserId() {
 		return UserId;
@@ -40,13 +43,23 @@ public class RoleGroupTaskListInputDTO {
 	public void setState(List<Map<String, Object>> state) {
 		State = state;
 	}
+//	@JsonProperty("RoleGroupId")
+//	public Integer getRoleGroupId() {
+//		return RoleGroupId;
+//	}
+//	public void setRoleGroupId(Integer roleGroupId) {
+//		RoleGroupId = roleGroupId;
+//	}
+
 	@JsonProperty("RoleGroupId")
-	public Integer getRoleGroupId() {
+	public List<Integer> getRoleGroupId() {
 		return RoleGroupId;
 	}
-	public void setRoleGroupId(Integer roleGroupId) {
+
+	public void setRoleGroupId(List<Integer> roleGroupId) {
 		RoleGroupId = roleGroupId;
-	}	
+	}
+
 	@JsonProperty("PageIndex")
 	public Integer getPageIndex() {
 		return PageIndex;
@@ -61,7 +74,22 @@ public class RoleGroupTaskListInputDTO {
 	public void setPageSize(Integer pageSize) {
 		PageSize = pageSize;
 	}
+	@JsonProperty("AssignmentTaskSheet")
+	public String getAssignmentTaskSheet() {
+		return AssignmentTaskSheet;
+	}
 
+	public void setAssignmentTaskSheet(String assignmentTaskSheet) {
+		AssignmentTaskSheet = assignmentTaskSheet;
+	}
+	@JsonProperty("FacilityIdList")
+	public List<Integer> getFacilityIdList() {
+		return FacilityIdList;
+	}
+
+	public void setFacilityIdList(List<Integer> facilityIdList) {
+		FacilityIdList = facilityIdList;
+	}
 
 	public static class TaskIdList{
 		private List<Integer> TaskIdList;

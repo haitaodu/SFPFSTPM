@@ -9,6 +9,7 @@ import com.smartflow.model.UserModel;
 import com.smartflow.model.WorkOrderItem;
 import com.smartflow.service.MyRoleGroupTaskListSerivce;
 import com.smartflow.service.MyTaskService;
+import com.smartflow.service.StationService;
 import com.smartflow.util.ExportCsvUtil;
 import com.smartflow.util.PropertyUtil;
 import com.smartflow.util.StringUtil;
@@ -40,11 +41,13 @@ public class MyTaskController extends BaseController{
 	MyRoleGroupTaskListSerivce myRoleGroupTaskListSerivce;
 	private final
 	MyTaskService myTaskService;
+	private final StationService stationService;
 
 	@Autowired
-	public MyTaskController(MyRoleGroupTaskListSerivce myRoleGroupTaskListSerivce, MyTaskService myTaskService) {
+	public MyTaskController(MyRoleGroupTaskListSerivce myRoleGroupTaskListSerivce, MyTaskService myTaskService,StationService stationService) {
 		this.myRoleGroupTaskListSerivce = myRoleGroupTaskListSerivce;
 		this.myTaskService = myTaskService;
+		this.stationService = stationService;
 	}
 
 	/**
@@ -52,19 +55,20 @@ public class MyTaskController extends BaseController{
 	 * @return
 	 */
 	@CrossOrigin(origins="*",maxAge=3600)
-	@GetMapping (value="/GetStateAndRoleGroupInit")
-	public Map<String,Object> getStateAndRoleGroupInit() {
+	@GetMapping (value="/GetStateAndRoleGroupInit/{userId}")
+	public Map<String,Object> getStateAndRoleGroupInit(@PathVariable Integer userId) {
 		Map<String, Object> json = new HashMap<>();
 		StateAndRoleGroupInitDTO stateAndRoleGroupInitDTO = new StateAndRoleGroupInitDTO();
 		List<Map<String,Object>> stateList = PropertyUtil.getStautsList();
 		stateAndRoleGroupInitDTO.setStateList(stateList);
 		try{
-			List<Map<String,Object>> roleGroupList = myRoleGroupTaskListSerivce.getRoleGroupListByUserId(2);
-			Map<String,Object> roleGroupMap1 = new HashMap<String,Object>();
-			roleGroupMap1.put("key", 0);
-			roleGroupMap1.put("label", "所有");
-			roleGroupList.add(roleGroupMap1);
+			List<Map<String,Object>> roleGroupList = myRoleGroupTaskListSerivce.getRoleGroupListByUserId(userId);
+//			Map<String,Object> roleGroupMap1 = new HashMap<String,Object>();
+//			roleGroupMap1.put("key", 0);
+//			roleGroupMap1.put("label", "所有");
+//			roleGroupList.add(roleGroupMap1);
 			stateAndRoleGroupInitDTO.setRoleGroupList(roleGroupList);
+            stateAndRoleGroupInitDTO.setTargetFacilityList(stationService.getFacilityList());
 			json = this.setJson(200, "初始化成功", stateAndRoleGroupInitDTO);
 		}catch(Exception e){
 			logger.error(e);
@@ -83,10 +87,12 @@ public class MyTaskController extends BaseController{
 		Map<String,Object> json = new HashMap<String,Object>();
 		Map<String,Object> map = new HashMap<>();
 		try{
-			Integer RowCount = myRoleGroupTaskListSerivce.getTotalCountRoleGroupTaskListByCondition(roleGroupTaskListConditionDTO);
-			List<RoleGroupTaskListOutputRowDTO> roleGroupTaskListOutputDTOList = myRoleGroupTaskListSerivce.getRoleGroupTaskListByCondition(roleGroupTaskListConditionDTO);
-			map.put("RowCount", RowCount);
-			map.put("Tdto", roleGroupTaskListOutputDTOList);
+//			Integer RowCount = myRoleGroupTaskListSerivce.getTotalCountRoleGroupTaskListByCondition(roleGroupTaskListConditionDTO);
+//			List<RoleGroupTaskListOutputRowDTO> roleGroupTaskListOutputDTOList = myRoleGroupTaskListSerivce.getRoleGroupTaskListByCondition(roleGroupTaskListConditionDTO);
+            Integer RowCount = myRoleGroupTaskListSerivce.getTotalCountWorkOrderListByCondition(roleGroupTaskListConditionDTO);
+			List<RoleGroupTaskListOutputRowDTO> roleGroupTaskListOutputDTOList = myRoleGroupTaskListSerivce.getWorkOrderListByCondition(roleGroupTaskListConditionDTO);
+            map.put("RowCount", RowCount);
+            map.put("Tdto", roleGroupTaskListOutputDTOList);
 			json = this.setJson(200, "查询成功！", map);
 		}catch(Exception e){
 			logger.error(e);
@@ -105,16 +111,20 @@ public class MyTaskController extends BaseController{
 	public Map<String,Object> ReceiveTask(@RequestBody TaskIdList taskIdList){
 		Map<String,Object> json = new HashMap<String,Object>();
 		try{
-			for (Integer workOrderItemId : taskIdList.getTaskIdList()) {
-				Integer status = myRoleGroupTaskListSerivce.getStatusByWorkOrderItemId(workOrderItemId);
-				if(status != 1){					
-					json = this.setJson(0, "只可以领取状态为新的任务！", -1);			
+            for (Integer workOrderId : taskIdList.getTaskIdList()) {
+//			for (Integer workOrderItemId : taskIdList.getTaskIdList()) {
+//				Integer status = myRoleGroupTaskListSerivce.getStatusByWorkOrderItemId(workOrderItemId);
+                Integer status = myRoleGroupTaskListSerivce.getStatusByWorkOrderId(workOrderId);
+				if(status != 1){
+					json = this.setJson(0, "只可以领取状态为新的任务！", -1);
 					return json;
 				}
 			}
-			for (Integer workOrderItemId : taskIdList.getTaskIdList()) {
-				myRoleGroupTaskListSerivce.updateStatusAndUserIdByWorkOrderItemId(workOrderItemId, taskIdList.getUserId());
-			}			
+//			for (Integer workOrderItemId : taskIdList.getTaskIdList()) {
+            for (Integer workOrderId : taskIdList.getTaskIdList()) {
+//				myRoleGroupTaskListSerivce.updateStatusAndUserIdByWorkOrderItemId(workOrderItemId, taskIdList.getUserId());
+ 				myRoleGroupTaskListSerivce.updateStatusAndUserIdByWorkOrderId(workOrderId, taskIdList.getUserId());
+			}
 			json = this.setJson(200, "领取任务成功！", null);
 		}catch(Exception e){
 			logger.error(e);
@@ -134,7 +144,8 @@ public class MyTaskController extends BaseController{
 		AssignmentTaskInitOutputDTO assignmentTaskInitOutputDTO = new AssignmentTaskInitOutputDTO();
 		try{
 			if(taskIdList.getTaskIdList() != null){
-				List<AssignmentTaskInitOutputRowDTO> taskList = myRoleGroupTaskListSerivce.getAssignmentTaskInitDTOByWorkOrderItemId(taskIdList.getTaskIdList());
+//				List<AssignmentTaskInitOutputRowDTO> taskList = myRoleGroupTaskListSerivce.getAssignmentTaskInitDTOByWorkOrderItemId(taskIdList.getTaskIdList());
+                List<AssignmentTaskInitOutputRowDTO> taskList = myRoleGroupTaskListSerivce.getAssignmentTaskInitDTOByWorkOrderId(taskIdList.getTaskIdList());
 				assignmentTaskInitOutputDTO.setTaskList(taskList);
 			}
 			List<Map<String, Object>> roleGroupList = myRoleGroupTaskListSerivce.getRoleGroupList();
@@ -182,14 +193,14 @@ public class MyTaskController extends BaseController{
 		Map<String,Object> json = new HashMap<String,Object>();
 		try{
 			for (Integer workOrderItemId : assignmentTaskInputDTO.getTaskIdList()) {
-				Integer status = myRoleGroupTaskListSerivce.getStatusByWorkOrderItemId(workOrderItemId);
+				Integer status = myRoleGroupTaskListSerivce.getStatusByWorkOrderId(workOrderItemId);
 				if(status != 1 && status != 2){
 					json = this.setJson(0, "只可以分配状态为新或者已分配的任务！", -1);
 					return json;
 				}
 			}
-			for (Integer workOrderItemId : assignmentTaskInputDTO.getTaskIdList()) {
-				myRoleGroupTaskListSerivce.updateStatusAndUserIdAndRoleIdByWorkOrderItemId(workOrderItemId, assignmentTaskInputDTO.getStaffId(), assignmentTaskInputDTO.getRoleGroupId());	
+			for (Integer workOrderId : assignmentTaskInputDTO.getTaskIdList()) {
+				myRoleGroupTaskListSerivce.updateStatusAndUserIdAndRoleIdByWorkOrderId(workOrderId, assignmentTaskInputDTO.getStaffId(), assignmentTaskInputDTO.getRoleGroupId());
 			}
 			json = this.setJson(200, "分配任务成功！", 0);
 		}catch(Exception e){
@@ -213,11 +224,12 @@ public class MyTaskController extends BaseController{
 		try{
 			List<Map<String,Object>> stateList = PropertyUtil.getStautsList();
 			stateAndDeviceInitDTO.setStateList(stateList);
-			List<Map<String, Object>> deviceList = myTaskService.getFacilityList();
-			Map<String,Object> deviceMap = new HashMap<>();
-			deviceMap.put("key", 0);
-			deviceMap.put("label", "所有");
-			deviceList.add(deviceMap);
+//			List<Map<String, Object>> deviceList = myTaskService.getFacilityList();
+            List<Map<String, Object>> deviceList = stationService.getFacilityList();
+//			Map<String,Object> deviceMap = new HashMap<>();
+//			deviceMap.put("key", 0);
+//			deviceMap.put("label", "所有");
+//			deviceList.add(deviceMap);
 			stateAndDeviceInitDTO.setDeviceList(deviceList);
 			json = this.setJson(200, "初始化状态和设备成功！", stateAndDeviceInitDTO);
 		}catch(Exception e){
@@ -238,8 +250,10 @@ public class MyTaskController extends BaseController{
 		Map<String,Object> json = new HashMap<String,Object>();
 		Map<String,Object> map = new HashMap<>();
 		try {
-			List<TaskListOutputDTO> taskListOutputDTOList = myTaskService.getRoleGroupTaskListByCondition(taskListInputDTO);
-			Integer RowCount = myTaskService.getTotalCountRoleGroupTaskListByCondition(taskListInputDTO);
+//			List<TaskListOutputDTO> taskListOutputDTOList = myTaskService.getRoleGroupTaskListByCondition(taskListInputDTO);
+//			Integer RowCount = myTaskService.getTotalCountRoleGroupTaskListByCondition(taskListInputDTO);
+            List<TaskListOutputDTO> taskListOutputDTOList = myTaskService.getWorkOrderListByCondition(taskListInputDTO);
+			Integer RowCount = myTaskService.getTotalCountWorkOrderListByCondition(taskListInputDTO);
 			map.put("RowCount", RowCount);
 			map.put("Tdto", taskListOutputDTOList);
 			json = this.setJson(200, "查询成功！", map);
@@ -260,7 +274,8 @@ public class MyTaskController extends BaseController{
 	public Map<String,Object> taskListPrintPreview(@RequestBody TaskIdList taskIdList, HttpServletRequest request, HttpServletResponse response){
 		Map<String,Object> json = new HashMap<String,Object>();
 		try{
-			List<TaskListOutputDTO> taskListOutputDTOList = myTaskService.getRoleGroupTaskListByTaskIdList(taskIdList);
+//			List<TaskListOutputDTO> taskListOutputDTOList = myTaskService.getRoleGroupTaskListByTaskIdList(taskIdList);
+            List<TaskListOutputDTO> taskListOutputDTOList = myTaskService.getRoleGroupTaskListByWorkOrderIdList(taskIdList);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
 			String fileName = "MyTaskList_";
 			String webappPath = request.getSession().getServletContext().getRealPath("/temp");
@@ -297,6 +312,26 @@ public class MyTaskController extends BaseController{
 		}	
 		return json;
 	}
+
+    /**
+     * 完成我的任务
+     * @param TaskId
+     * @return
+     */
+    @CrossOrigin(origins="*",maxAge=3600)
+    @RequestMapping(value="/CompleteTask/{TaskId}",method=RequestMethod.GET)
+    public Map<String,Object> completeTask(@PathVariable Integer TaskId){
+        Map<String,Object> json = new HashMap<String,Object>();
+        try{
+            myRoleGroupTaskListSerivce.updateStatusByWorkOrderId(TaskId);
+            json = this.setJson(200, "已完成任务！", 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            json = this.setJson(200, "完成任务失败："+e.getMessage(), -1);
+        }
+        return json;
+    }
+
 
 	/**
 	 * 新增维保记录初始化人员下拉框、维保结果下拉框

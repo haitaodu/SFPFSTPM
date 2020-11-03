@@ -32,7 +32,12 @@ public class WorkOrder {
 	private Integer EditorId;
 	private Date EditDateTime;
 	private Integer Status;
-	private Set<WorkOrderItem> WorkOrderItems = new HashSet<>();
+//	private Set<WorkOrderItem> WorkOrderItems = new HashSet<>();
+
+	private String FacilityId;
+	private Integer WorkPlanId;
+
+	private String ItemName;
 	@Id
 	@GeneratedValue
 	public Integer getId() {
@@ -155,18 +160,41 @@ public class WorkOrder {
 		Status = status;
 	}
 
-	@JsonIgnore
-	@OneToMany(targetEntity=WorkOrderItem.class,fetch=FetchType.LAZY)
-	@JoinColumn(name="WorkOrderId")
-	public Set<WorkOrderItem> getWorkOrderItems() {
-		return WorkOrderItems;
+//	@JsonIgnore
+//	@OneToMany(targetEntity=WorkOrderItem.class,fetch=FetchType.LAZY)
+//	@JoinColumn(name="WorkOrderId")
+//	public Set<WorkOrderItem> getWorkOrderItems() {
+//		return WorkOrderItems;
+//	}
+//
+//
+//	public void setWorkOrderItems(Set<WorkOrderItem> workOrderItems) {
+//		WorkOrderItems = workOrderItems;
+//	}
+
+	public String getItemName() {
+		return ItemName;
 	}
 
-
-	public void setWorkOrderItems(Set<WorkOrderItem> workOrderItems) {
-		WorkOrderItems = workOrderItems;
+	public void setItemName(String itemName) {
+		ItemName = itemName;
 	}
 
+	public String getFacilityId() {
+		return FacilityId;
+	}
+
+	public void setFacilityId(String facilityId) {
+		FacilityId = facilityId;
+	}
+
+	public Integer getWorkPlanId() {
+		return WorkPlanId;
+	}
+
+	public void setWorkPlanId(Integer workPlanId) {
+		WorkPlanId = workPlanId;
+	}
 
 	public WorkOrder() {
 		

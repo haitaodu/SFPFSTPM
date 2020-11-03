@@ -293,7 +293,7 @@ public class StationDaoImpl implements StationDao{
 	public List<Map<String, Object>> getAreaList() {
 		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
 		Session session = sessionFactory.openSession();
-		String sql = "select Id [key],concat(AreaNumber,'('+Description+')') label from core.Area where State = 1";
+		String sql = "select Id [value],concat(AreaNumber,'('+Description+')') label from core.Area where State = 1";
 		try{
 			Query query = session.createSQLQuery(sql);
 			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
@@ -309,7 +309,7 @@ public class StationDaoImpl implements StationDao{
 	public List<Map<String, Object>> getCellListByAreaId(Integer areaId) {
 		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
 		Session session = sessionFactory.openSession();
-		String sql = "select Id [key],concat(CellNumber,'('+Description+')') label from core.Cell where State = 1 and AreaId = "+areaId;
+		String sql = "select Id [value],concat(CellNumber,'('+Description+')') label from core.Cell where State = 1 and AreaId = "+areaId;
 		try{
 			Query query = session.createSQLQuery(sql);
 			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
@@ -325,7 +325,7 @@ public class StationDaoImpl implements StationDao{
 	public List<Map<String, Object>> getStationGroupListByCellId(Integer cellId) {
 		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
 		Session session = sessionFactory.openSession();
-		String sql = "select Id [key],concat(GroupNumber,'('+Description+')') label from core.StationGroup where State = 1 and CellId = "+cellId+" order by GroupNumber";
+		String sql = "select Id [value],concat(GroupNumber,'('+Description+')') label from core.StationGroup where State = 1 and CellId = "+cellId+" order by GroupNumber";
 		try{
 			Query query = session.createSQLQuery(sql);
 			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
@@ -341,7 +341,7 @@ public class StationDaoImpl implements StationDao{
 	public List<Map<String, Object>> getStationListByStationGroupId(Integer stationGroupId) {
 		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
 		Session session = sessionFactory.openSession();
-		String sql = "select Id [key],concat(StationNumber,'('+Name+')') label from core.Station where State = 1 and Id in (select StationtId from core.Station_StationGroup where StationGroupId = "+stationGroupId+") order by StationNumber";
+		String sql = "select Id [value],concat(StationNumber,'('+Name+')') label from core.Station where State = 1 and Id in (select StationtId from core.Station_StationGroup where StationGroupId = "+stationGroupId+") order by StationNumber";
 		try{
 			Query query = session.createSQLQuery(sql);
 			return query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
@@ -350,6 +350,106 @@ public class StationDaoImpl implements StationDao{
 			return null;
 		}finally{
 			session.close();
+		}
+	}
+
+	@Override
+	public String getAreaDescriptionByAreaId(Integer areaId) {
+		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
+		Session session = sessionFactory.openSession();
+		String sql = "select Description from core.Area where Id = "+areaId;
+		try{
+			Query query = session.createSQLQuery(sql);
+			return query.uniqueResult().toString();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally{
+			session.close();
+		}
+	}
+
+	@Override
+	public String getCellDescriptionByCellId(Integer cellId) {
+		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
+		Session session = sessionFactory.openSession();
+		String sql = "select Description from core.Cell where Id = "+cellId;
+		try{
+			Query query = session.createSQLQuery(sql);
+			return query.uniqueResult().toString();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally{
+			session.close();
+		}
+	}
+
+	@Override
+	public String getStationGroupNameByStationGroupId(Integer stationGroupId) {
+		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
+		Session session = sessionFactory.openSession();
+		String hql = "select description from StationGroup where Id = "+stationGroupId;
+		try{
+			Query query = session.createQuery(hql);
+			return query.uniqueResult().toString();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally{
+			session.close();
+		}
+	}
+
+	@Override
+	public String getStationNameByStationId(Integer stationId) {
+		SessionFactory sessionFactory = hibernateTemplate.getSessionFactory();
+		Session session = sessionFactory.openSession();
+		String hql = "select name from Station where Id = "+stationId;
+		try{
+			Query query = session.createQuery(hql);
+			return query.uniqueResult().toString();
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally{
+			session.close();
+		}
+	}
+
+	@Override
+	public String getFacilityNameByFacilityIdList(List<Integer> facilityIdList) {
+		StringBuffer facilityName = new StringBuffer();
+		Integer areaId = facilityIdList.get(0);
+		String area = getAreaDescriptionByAreaId(areaId);
+		facilityName.append(area);
+		facilityName.append("/");
+		Integer cellId = facilityIdList.get(1);
+		String cell;
+		String stationGroupName;
+		String stationName;
+		if(cellId == 0){
+			cell = "所有";
+			facilityName.append(cell);
+			return facilityName.toString();
+		}else{
+			cell = getCellDescriptionByCellId(cellId);
+			facilityName.append(cell);
+			facilityName.append("/");
+			Integer stationGroupId = facilityIdList.get(2);
+			if(stationGroupId == 0){
+				stationGroupName = "所有";
+				facilityName.append(stationGroupName);
+				return facilityName.toString();
+			}else{
+				stationGroupName = getStationGroupNameByStationGroupId(stationGroupId);
+				facilityName.append(stationGroupName);
+				facilityName.append("/");
+				Integer stationId = facilityIdList.get(3);
+				stationName = getStationNameByStationId(stationId);
+				facilityName.append(stationName);
+				return facilityName.toString();
+			}
 		}
 	}
 }

@@ -24,7 +24,6 @@ public interface MyRoleGroupTaskListSerivce {
 	public List<Map<String,Object>> getRoleGroupListByUserId(Integer userId);	
 	/**
 	 * 获取角色组下拉框
-	 * @param userId
 	 * @return
 	 */
 	public List<Map<String,Object>> getRoleGroupList();	
@@ -40,6 +39,21 @@ public interface MyRoleGroupTaskListSerivce {
 	 * @return
 	 */
 	public List<RoleGroupTaskListOutputRowDTO> getRoleGroupTaskListByCondition(RoleGroupTaskListInputDTO roleGroupTaskListConditionDTO);
+
+	/**
+	 * 通过开始时间、结束时间、状态、角色组查询我的角色组任务清单列表总条数
+	 * @param roleGroupTaskListConditionDTO
+	 * @return
+	 */
+	public Integer getTotalCountWorkOrderListByCondition(RoleGroupTaskListInputDTO roleGroupTaskListConditionDTO);
+	/**
+	 * 通过开始时间、结束时间、状态、角色组查询我的角色组任务清单列表
+	 * @param roleGroupTaskListConditionDTO
+	 * @return
+	 */
+	public List<RoleGroupTaskListOutputRowDTO> getWorkOrderListByCondition(RoleGroupTaskListInputDTO roleGroupTaskListConditionDTO);
+
+
 	/**
 	 * 根据workOrderItemId查询当前任务状态
 	 * @param workOrderItemId
@@ -47,11 +61,29 @@ public interface MyRoleGroupTaskListSerivce {
 	 */
 	public Integer getStatusByWorkOrderItemId(Integer workOrderItemId);
 	/**
+	 * 根据workOrderId查询当前任务状态
+	 * @param workOrderId
+	 * @return
+	 */
+	public Integer getStatusByWorkOrderId(Integer workOrderId);
+	/**
 	 * 根据workOrderItemId修改当前任务状态和领取任务人
 	 * @param workOrderItemId
 	 * @param userId
 	 */
 	public void updateStatusAndUserIdByWorkOrderItemId(Integer workOrderItemId,Integer userId);
+
+	/**
+	 * 根据workOrderId修改当前任务状态和领取任务人
+	 * @param workOrderId
+	 * @param userId
+	 */
+	public void updateStatusAndUserIdByWorkOrderId(Integer workOrderId,Integer userId);
+	/**
+	 * 根据workOrderId修改当前任务状态
+	 * @param workOrderId
+	 */
+	public void updateStatusByWorkOrderId(Integer workOrderId);
 	/**
 	 * 根据workOrderItemId修改当前任务状态和领取任务人 和负责角色id
 	 * @param workOrderItemId
@@ -60,11 +92,24 @@ public interface MyRoleGroupTaskListSerivce {
 	 */
 	public void updateStatusAndUserIdAndRoleIdByWorkOrderItemId(Integer workOrderItemId,Integer userId,Integer roleId);
 	/**
+	 * 根据workOrderId修改当前任务状态和领取任务人和负责角色id
+	 * @param workOrderId
+	 * @param userId
+	 * @param roleId
+	 */
+	public void updateStatusAndUserIdAndRoleIdByWorkOrderId(Integer workOrderId,Integer userId, Integer roleId);
+	/**
 	 * 根据workOrderItemId查询任务详情
 	 * @param workOrderItemIdList
 	 * @return
 	 */
 	public List<AssignmentTaskInitOutputRowDTO> getAssignmentTaskInitDTOByWorkOrderItemId(List<Integer> workOrderItemIdList);
+	/**
+	 * 根据workOrderIdList查询任务详情
+	 * @param workOrderIdList
+	 * @return
+	 */
+	public List<AssignmentTaskInitOutputRowDTO> getAssignmentTaskInitDTOByWorkOrderId(List<Integer> workOrderIdList);
 	/**
 	 *  (根据角色id)获取人员下拉框
 	 * @param roleId

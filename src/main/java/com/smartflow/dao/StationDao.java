@@ -94,7 +94,7 @@ public interface StationDao {
 	
 	/**
 	 * 根据stationId删除Station_StationGroup
-	 * @param stationId
+	 * @param station_StationGroup
 	 */
 	public void deleteStation_StationGroup(Station_StationGroup station_StationGroup);
 	
@@ -154,4 +154,37 @@ public interface StationDao {
 	 * @return
 	 */
 	public List<Map<String,Object>> getStationListByStationGroupId(Integer stationGroupId);
+
+	/**
+	 * 根据线体id获取线体描述
+	 * @param areaId
+	 * @return
+	 */
+	public String getAreaDescriptionByAreaId(Integer areaId);
+
+	/**
+	 * 根据岛区id获取岛区描述
+	 * @param cellId
+	 * @return
+	 */
+	public String getCellDescriptionByCellId(Integer cellId);
+	/**
+	 * 根据工站组id获取工站组名称
+	 * @param stationGroupId
+	 * @return
+	 */
+	public String getStationGroupNameByStationGroupId(Integer stationGroupId);
+	/**
+	 * 根据工站id获取工站名称
+	 * @param stationId
+	 * @return
+	 */
+	public String getStationNameByStationId(Integer stationId);
+
+	/**
+	 * 根据设备id查询设备名称（线体->岛区->工站组->工作站）
+	 * @param facilityIdList
+	 * @return
+	 */
+	public String getFacilityNameByFacilityIdList(List<Integer> facilityIdList);
 } 

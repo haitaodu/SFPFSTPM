@@ -15,7 +15,7 @@ import com.smartflow.model.WorkPlan;
 public interface MaintenanceTaskPlanService {
 	//With the  Paramaters Of PageSize , PageIndex, MaintenanceTaskPlanName,FacilityName。
 	//result PagesDTO
-	List<MaintenanceTaskPlanPageDTO> pageDTO(Integer pageSize,Integer pageIndex,String maintenanceTaskPlanName,String facilityName);
+	List<MaintenanceTaskPlanPageDTO> pageDTO(Integer pageSize,Integer pageIndex,String maintenanceTaskPlanName,List<Integer> facilityIdList, Integer state);
 	//With the Maintenacne Id
 	//result Maintenance Preview
 	List<MaintenancePreviewDTO> geMaintenancePreviewDTO(Integer maintenanceId);
@@ -51,8 +51,12 @@ public interface MaintenanceTaskPlanService {
 	//del the workplan for change state
 	Boolean delWorkPlanById(Integer workPlanId);
 	//get count for the workplan in condition
-	int getCount(String maintenanceTaskPlanName,String facilityName);
+	int getCount(String maintenanceTaskPlanName,List<Integer> facilityIdList, Integer state);
 	//judge is has a replication in the database for workplan,according workplan name
 	Boolean isReplication(String workplan);
-
+	/**
+	 * 根据维保任务计划id修改维保任务计划状态
+	 * @param workPlan
+	 */
+	void updateWorkPlanByWorkPlanId(WorkPlan workPlan);
 }

@@ -55,6 +55,13 @@ public class RemindsAndAssignmentsCalendarServiceImpl implements RemindsAndAssig
 	public List<Integer> getWorkOrderIdFromTPMWorkPlan_ReminderIdByWorkItemId(List<Integer> workItemId) {
 		return remindsAndAssignmentsCalendardao.getWorkOrderIdFromTPMWorkPlan_ReminderIdByWorkItemId(workItemId);
 	}
+
+	@Transactional
+	@Override
+	public void addWorkOrder(WorkOrder workOrder) {
+		remindsAndAssignmentsCalendardao.addWorkOrder(workOrder);
+	}
+
 	@Override
 	public Integer getFacilityIdByWorkItemId(List<Integer> workItemId) {
 		return remindsAndAssignmentsCalendardao.getFacilityIdByWorkItemId(workItemId);

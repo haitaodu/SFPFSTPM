@@ -39,20 +39,54 @@ public class MyRoleGroupTaskListSerivceImpl implements MyRoleGroupTaskListSerivc
 			RoleGroupTaskListInputDTO roleGroupTaskListConditionDTO) {
 		return myRoleGroupTaskListDao.getRoleGroupTaskListByCondition(roleGroupTaskListConditionDTO);
 	}
+
+	@Override
+	public Integer getTotalCountWorkOrderListByCondition(RoleGroupTaskListInputDTO roleGroupTaskListConditionDTO) {
+		return myRoleGroupTaskListDao.getTotalCountWorkOrderListByCondition(roleGroupTaskListConditionDTO);
+	}
+
+	@Override
+	public List<RoleGroupTaskListOutputRowDTO> getWorkOrderListByCondition(RoleGroupTaskListInputDTO roleGroupTaskListConditionDTO) {
+		return myRoleGroupTaskListDao.getWorkOrderListByCondition(roleGroupTaskListConditionDTO);
+	}
+
 	@Override
 	public Integer getStatusByWorkOrderItemId(Integer workOrderItemId) {
 		return myRoleGroupTaskListDao.getStatusByWorkOrderItemId(workOrderItemId);
 	}
+
+	@Override
+	public Integer getStatusByWorkOrderId(Integer workOrderId) {
+		return myRoleGroupTaskListDao.getStatusByWorkOrderId(workOrderId);
+	}
+
 	@Transactional
 	@Override
 	public void updateStatusAndUserIdByWorkOrderItemId(Integer workOrderItemId, Integer userId) {
 		myRoleGroupTaskListDao.updateStatusAndUserIdByWorkOrderItemId(workOrderItemId, userId);
 	}
+
+	@Override
+	public void updateStatusAndUserIdByWorkOrderId(Integer workOrderId, Integer userId) {
+		myRoleGroupTaskListDao.updateStatusAndUserIdByWorkOrderId(workOrderId, userId);
+	}
+
+	@Override
+	public void updateStatusByWorkOrderId(Integer workOrderId) {
+		myRoleGroupTaskListDao.updateStatusByWorkOrderId(workOrderId);
+	}
+
 	@Transactional
 	@Override
 	public void updateStatusAndUserIdAndRoleIdByWorkOrderItemId(Integer workOrderItemId, Integer userId, Integer roleId) {
 		myRoleGroupTaskListDao.updateStatusAndUserIdAndRoleIdByWorkOrderItemId(workOrderItemId, userId, roleId);
 	}
+
+	@Override
+	public void updateStatusAndUserIdAndRoleIdByWorkOrderId(Integer workOrderId, Integer userId, Integer roleId) {
+		myRoleGroupTaskListDao.updateStatusAndUserIdAndRoleIdByWorkOrderId(workOrderId, userId, roleId);
+	}
+
 	@Override
 	public List<Map<String,Object>> getUserList(Integer roleId) {
 		return myRoleGroupTaskListDao.getUserList(roleId);
@@ -61,5 +95,10 @@ public class MyRoleGroupTaskListSerivceImpl implements MyRoleGroupTaskListSerivc
 	public List<AssignmentTaskInitOutputRowDTO> getAssignmentTaskInitDTOByWorkOrderItemId(
 			List<Integer> workOrderItemIdList) {
 		return myRoleGroupTaskListDao.getAssignmentTaskInitDTOByWorkOrderItemId(workOrderItemIdList);
+	}
+
+	@Override
+	public List<AssignmentTaskInitOutputRowDTO> getAssignmentTaskInitDTOByWorkOrderId(List<Integer> workOrderIdList) {
+		return myRoleGroupTaskListDao.getAssignmentTaskInitDTOByWorkOrderId(workOrderIdList);
 	}
 }

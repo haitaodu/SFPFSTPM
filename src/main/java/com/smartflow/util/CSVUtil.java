@@ -196,10 +196,12 @@ public class CSVUtil {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 		TaskListOutputDTO myTaskOutputDTO1;
 		try {
-			myTaskOutputDTO1 = new TaskListOutputDTO(1, sdf.parse("2019-06-01 8:00:00"), "已分配", "PM001", "锡膏印刷机01", "点检", "喷嘴", "维护小组1", "张三", new BigDecimal(2.5));
+//			myTaskOutputDTO1 = new TaskListOutputDTO(1, sdf.parse("2019-06-01 8:00:00"), "已分配", "PM001", "锡膏印刷机01", "点检", "喷嘴", "维护小组1", "张三", new BigDecimal(2.5));
 
-			TaskListOutputDTO myTaskOutputDTO2 = new TaskListOutputDTO(2, sdf.parse("2019-06-05 8:00:00"), "已完成", "PM002", "锡膏印刷机02", "点检", "喷嘴", "维保小组2", "李四", new BigDecimal(3));
+//			TaskListOutputDTO myTaskOutputDTO2 = new TaskListOutputDTO(2, sdf.parse("2019-06-05 8:00:00"), "已完成", "PM002", "锡膏印刷机02", "点检", "喷嘴", "维保小组2", "李四", new BigDecimal(3));
+			myTaskOutputDTO1 = new TaskListOutputDTO(1, sdf.parse("2019-06-01 8:00:00"), "已分配", "PM001", "锡膏印刷机01", "点检", "维护小组1", "张三");
 
+			TaskListOutputDTO myTaskOutputDTO2 = new TaskListOutputDTO(2, sdf.parse("2019-06-05 8:00:00"), "已完成", "PM002", "锡膏印刷机02", "点检", "维保小组2", "李四");
 			dataList.add(myTaskOutputDTO1);
 			dataList.add(myTaskOutputDTO2);
 			return dataList;

@@ -97,7 +97,8 @@ public class ExportCsvUtil {
 			CsvWriter csvWriter = new CsvWriter(csvFile.getCanonicalPath(), ',', Charset.forName("UTF-8"));
 			//CsvWriter csvWriter = new CsvWriter(csvFile.getCanonicalPath(), ',', Charset.forName("UTF-8"));
 			//写入表头信息
-			String[] header = {"Id", "创建日期", "状态", "派工任务单", "目标设备", "项目名", "位置", "负责角色", "人员", "预估任务时长"};
+//			String[] header = {"Id", "创建日期", "状态", "派工任务单", "目标设备", "项目名", "位置", "负责角色", "人员", "预估任务时长"};
+			String[] header = {"Id", "创建日期", "状态", "派工任务单", "目标设备", "项目名", "负责角色", "人员"};
 			csvWriter.writeRecord(header);
 			for (String[] str : listToString(dataList)) {
 				csvWriter.writeRecord(str);
@@ -261,10 +262,10 @@ public class ExportCsvUtil {
 			rowData.put("AssignmentTaskSheet", outputDTO.getAssignmentTaskSheet());
 			rowData.put("TargetFacility", outputDTO.getTargetFacility());
 			rowData.put("ItemName", outputDTO.getItemName());
-			rowData.put("Position", outputDTO.getPosition());
+//			rowData.put("Position", outputDTO.getPosition());
 			rowData.put("RoleInCharge", outputDTO.getRoleInCharge());
 			rowData.put("Staff", outputDTO.getStaff());
-			rowData.put("PredictTaskLength", outputDTO.getPredictTaskLength().toString());
+//			rowData.put("PredictTaskLength", outputDTO.getPredictTaskLength().toString());
 			exportData.add(rowData);
 		}
 		return exportData;
@@ -281,10 +282,10 @@ public class ExportCsvUtil {
 			rowData.put("AssignmentTaskSheet", outputDTO.getAssignmentTaskSheet());
 			rowData.put("TargetFacility", outputDTO.getTargetFacility());
 			rowData.put("ItemName", outputDTO.getItemName());
-			rowData.put("Position", outputDTO.getPosition());
+//			rowData.put("Position", outputDTO.getPosition());
 			rowData.put("RoleInCharge", outputDTO.getRoleInCharge());
 			rowData.put("Staff", outputDTO.getStaff());
-			rowData.put("PredictTaskLength", outputDTO.getPredictTaskLength().toString());
+//			rowData.put("PredictTaskLength", outputDTO.getPredictTaskLength().toString());
 			exportData.add(rowData);
 		}
 		return exportData;
@@ -298,10 +299,10 @@ public class ExportCsvUtil {
 		headerMap.put("AssignmentTaskSheet", "派工任务单");
 		headerMap.put("TargetFacility", "目标设备");
 		headerMap.put("ItemName", "项目名");
-		headerMap.put("Position", "位置");
+//		headerMap.put("Position", "位置");
 		headerMap.put("RoleInCharge", "负责角色");
 		headerMap.put("Staff", "人员");
-		headerMap.put("PredictTaskLength", "预估任务时长");
+//		headerMap.put("PredictTaskLength", "预估任务时长");
 		return headerMap;
 	}
 
@@ -317,10 +318,12 @@ public class ExportCsvUtil {
 			str[3] = outputDTO.getAssignmentTaskSheet();
 			str[4] = outputDTO.getTargetFacility();
 			str[5] = outputDTO.getItemName();
-			str[6] = outputDTO.getPosition();
-			str[7] = outputDTO.getRoleInCharge();
-			str[8] = outputDTO.getStaff();
-			str[9] = outputDTO.getPredictTaskLength().toString();
+//			str[6] = outputDTO.getPosition();
+//			str[7] = outputDTO.getRoleInCharge();
+//			str[8] = outputDTO.getStaff();
+//			str[9] = outputDTO.getPredictTaskLength().toString();
+			str[6] = outputDTO.getRoleInCharge();
+			str[7] = outputDTO.getStaff();
 			strList.add(str);			
 		}
 		return strList;

@@ -19,8 +19,11 @@ public class WorkPlan {
 	private Date CreationDateTime;
 	private Integer EditorId;
 	private Date EditDateTime;
-	private Integer FacilityId;
+	private Integer TargetFacilityId;
 	private Role Role;
+
+	private Integer MaintenanceItemId;
+	private String FacilityId;
 
 	public WorkPlan(){};
 
@@ -80,13 +83,17 @@ public class WorkPlan {
 	public void setEditDateTime(Date editDateTime) {
 		EditDateTime = editDateTime;
 	}
+
 	@Column(name="TargetFacilityId")
-	public Integer getFacilityId() {
-		return FacilityId;
+	public Integer getTargetFacilityId() {
+		return TargetFacilityId;
 	}
-	public void setFacilityId(Integer facilityId) {
-		FacilityId = facilityId;
+
+	public void setTargetFacilityId(Integer targetFacilityId) {
+		TargetFacilityId = targetFacilityId;
 	}
+
+
 	@ManyToOne(cascade=CascadeType.REMOVE)
 	@JoinColumn(name="ActionOwnerRoleId")
 	public Role getRole() {
@@ -94,6 +101,23 @@ public class WorkPlan {
 	}
 	public void setRole(Role role) {
 		Role = role;
+	}
+	@Column(name="MaintenanceItemId")
+	public Integer getMaintenanceItemId() {
+		return MaintenanceItemId;
+	}
+
+	public void setMaintenanceItemId(Integer maintenanceItemId) {
+		MaintenanceItemId = maintenanceItemId;
+	}
+
+	@Column(name="FacilityId")
+	public String getFacilityId() {
+		return FacilityId;
+	}
+
+	public void setFacilityId(String facilityId) {
+		FacilityId = facilityId;
 	}
 
 	@Override

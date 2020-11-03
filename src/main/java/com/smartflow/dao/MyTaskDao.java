@@ -31,16 +31,35 @@ public interface MyTaskDao {
 	public Integer getTotalCountRoleGroupTaskListByCondition(TaskListInputDTO taskListInputDTO);
 	/**
 	 * 通过开始时间、结束时间、状态、设备查询我的任务列表
-	 * @param roleGroupTaskListConditionDTO
+	 * @param taskListInputDTO
 	 * @return
 	 */
 	public List<TaskListOutputDTO> getRoleGroupTaskListByCondition(TaskListInputDTO taskListInputDTO);
+
+	/**
+	 * 通过开始时间、结束时间、状态、设备查询我的任务列表总条数
+	 * @param taskListInputDTO
+	 * @return
+	 */
+	public Integer getTotalCountWorkOrderListByCondition(TaskListInputDTO taskListInputDTO);
+	/**
+	 * 通过开始时间、结束时间、状态、设备查询我的任务列表
+	 * @param taskListInputDTO
+	 * @return
+	 */
+	public List<TaskListOutputDTO> getWorkOrderListByCondition(TaskListInputDTO taskListInputDTO);
 	/**
 	 * 根据任务id查询任务，实现打印功能
 	 * @param taskIdList
 	 * @return
 	 */
 	public List<TaskListOutputDTO> getRoleGroupTaskListByTaskIdList(TaskIdList taskIdList);
+	/**
+	 * 根据任务id查询任务，实现打印功能
+	 * @param workOrderIdList
+	 * @return
+	 */
+	public List<TaskListOutputDTO> getRoleGroupTaskListByWorkOrderIdList(TaskIdList workOrderIdList);
 	/**
 	 * 根据任务id查询任务详情
 	 * @param taskId

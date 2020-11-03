@@ -14,7 +14,7 @@ import com.smartflow.model.WorkPlan;
 public interface MaintenanceTaskPlanDao {
 //With the  Paramaters Of PageSize , PageIndex, MaintenanceTaskPlanName,FacilityName。
 //result PagesDTO
-List<MaintenanceTaskPlanPageDTO> pageDTO(Integer pageSize,Integer pageIndex,String maintenanceTaskPlanName,String facilityName);
+List<MaintenanceTaskPlanPageDTO> pageDTO(Integer pageSize,Integer pageIndex,String maintenanceTaskPlanName,List<Integer> facilityIdList, Integer state);
 //With the Maintenacne Id
 //result Maintenance Preview
 List<MaintenancePreviewDTO> geMaintenancePreviewDTO(Integer maintenanceId);
@@ -51,7 +51,7 @@ List<Reminder> getReminderList();
 //Del the workplan by id,just take state  exchange 1 or 0 to -1
 Boolean delWorkPlanForChangeState(int id);
 //get count for the workplan in condition
-int getCount(String maintenanceTaskPlanName,String facilityName);
+int getCount(String maintenanceTaskPlanName,List<Integer> facilityIdList, Integer state);
 //save workplan by taskPlanSaveOutPutDTO
 Boolean saveWorkPlanData(WorkPlan workPlan);
 //del TPMWorkPlan_Reminder And WorkPlanExcutionState by workplanId
@@ -62,4 +62,10 @@ Boolean delTPMWP_RemAndWPExcutionStateByWPId(Integer workPlanId);
 //Boolean addWorkItemByTaskPlanDTO(TaskPlanSaveOutputDTO   taskPlanEditeOutPutDTO,WorkPlan workPlan);
 //find the workplans,according string for workplan name
 List<WorkPlan> getWorkPlansByString(String workplanforname);
+
+    /**
+     * 根据维保任务计划id修改维保任务计划状态
+     * @param workPlan
+     */
+    void updateWorkPlanByWorkPlanId(WorkPlan workPlan);
 }

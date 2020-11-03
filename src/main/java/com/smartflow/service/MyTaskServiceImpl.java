@@ -33,10 +33,27 @@ public class MyTaskServiceImpl implements MyTaskService {
 	public List<TaskListOutputDTO> getRoleGroupTaskListByCondition(TaskListInputDTO taskListInputDTO) {
 		return myTaskDao.getRoleGroupTaskListByCondition(taskListInputDTO);
 	}
+
+	@Override
+	public Integer getTotalCountWorkOrderListByCondition(TaskListInputDTO taskListInputDTO) {
+		return myTaskDao.getTotalCountWorkOrderListByCondition(taskListInputDTO);
+	}
+
+	@Override
+	public List<TaskListOutputDTO> getWorkOrderListByCondition(TaskListInputDTO taskListInputDTO) {
+		return myTaskDao.getWorkOrderListByCondition(taskListInputDTO);
+	}
+
 	@Override
 	public List<TaskListOutputDTO> getRoleGroupTaskListByTaskIdList(TaskIdList taskIdList) {		
 		return myTaskDao.getRoleGroupTaskListByTaskIdList(taskIdList);
 	}
+
+	@Override
+	public List<TaskListOutputDTO> getRoleGroupTaskListByWorkOrderIdList(TaskIdList workOrderIdList) {
+		return myTaskDao.getRoleGroupTaskListByWorkOrderIdList(workOrderIdList);
+	}
+
 	@Override
 	public TaskDetailOutputDTO getTaskDetailByTaskId(Integer taskId) {
 		return myTaskDao.getTaskDetailByTaskId(taskId);

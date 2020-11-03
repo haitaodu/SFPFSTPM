@@ -1,5 +1,6 @@
 package com.smartflow.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,6 +10,10 @@ import javax.transaction.Transactional;
 
 import com.smartflow.common.enumpack.PeriodicType;
 import com.smartflow.cron.util.DateUtil;
+import com.smartflow.dao.AddAssignmentsListDao;
+import com.smartflow.dao.RemindsAndAssignmentsCalendarDao;
+import com.smartflow.model.*;
+import com.smartflow.quartz.DynamicScheduledTask;
 import org.apache.commons.collections.CollectionUtils;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,25 +29,28 @@ import com.smartflow.dto.maintenancetaskplan.PeriodicTypeDTO;
 import com.smartflow.dto.maintenancetaskplan.TaskPlanEditeOutputDTO;
 import com.smartflow.dto.maintenancetaskplan.TaskPlanHeadDto;
 import com.smartflow.dto.maintenancetaskplan.TaskPlanSaveOutputDTO;
-import com.smartflow.model.Reminder;
-import com.smartflow.model.TPMWorkPlan_Reminder;
-import com.smartflow.model.WorkPlan;
 import com.smartflow.util.DTOToModelUtil;
 import org.springframework.util.StringUtils;
 
 @Service
 public class MaintenanceTaskPlanServiceImpl implements MaintenanceTaskPlanService{
-@Autowired
-MaintenanceTaskPlanDao maintenanceTaskPlanDao;
-@Autowired
-ReminderDao reminderDao;
-@Autowired
-HibernateTemplate hibernate;
+	@Autowired
+	MaintenanceTaskPlanDao maintenanceTaskPlanDao;
+	@Autowired
+	ReminderDao reminderDao;
+	@Autowired
+	RemindsAndAssignmentsCalendarDao remindsAndAssignmentsCalendarDao;
+	@Autowired
+	AddAssignmentsListDao addAssignmentsListDao;
+
+	@Autowired
+	private DynamicScheduledTask dynamicScheduledTask;
+	@Autowired
+	HibernateTemplate hibernate;
 	@Override
 	public List<MaintenanceTaskPlanPageDTO> pageDTO(Integer pageSize, Integer pageIndex, String maintenanceTaskPlanName,
-			String facilityName) {
-		
-		return maintenanceTaskPlanDao.pageDTO(pageSize, pageIndex, maintenanceTaskPlanName, facilityName);
+													List<Integer> facilityIdList, Integer state) {
+		return maintenanceTaskPlanDao.pageDTO(pageSize, pageIndex, maintenanceTaskPlanName, facilityIdList, state);
 	}
 
 	@Override
@@ -133,41 +141,71 @@ HibernateTemplate hibernate;
 	public Boolean saveData(TaskPlanSaveOutputDTO taskPlanSaveOutPutDTO) {
 		
 		try {
-		WorkPlan workPlan=DTOToModelUtil.TaskPlanSaveOutputDTOModel(taskPlanSaveOutPutDTO);
-		//从前台dto中取出Reminder数组
-//		List<PeriodicTypeDTO> periodicTypeDTOs=taskPlanSaveOutPutDTO.getPeriodicTypeList();
-		//保存reminder(内存有cron表达式)
-		List<Integer> periodicTypeDTOs = taskPlanSaveOutPutDTO.getPeriodicTypeList();
-		hibernate.save(workPlan);
-		if(CollectionUtils.isNotEmpty(periodicTypeDTOs)) {
-//		for (PeriodicTypeDTO periodicTypeDTO : periodicTypeDTOs) {
-//			Reminder reminder=DTOToModelUtil.periodicTypeDTOToReminder(periodicTypeDTO);
-//			if (!CronExpression.isValidExpression(reminder.getCRONExpression())) {
-//				return false;
-//			}
-//			hibernate.save(reminder);
-//			TPMWorkPlan_Reminder tpmWorkPlan_Reminder=DTOToModelUtil.ReminderAndWorkPlanToTPMWorkPlan_Reminder(reminder, workPlan);
-//			//这个和reminder关联的表也要进行数据的插入
-//			hibernate.save(tpmWorkPlan_Reminder);
-//
-//		}
-			PeriodicTypeDTO periodicTypeDTO = DTOToModelUtil.periodicTypeDTOToPeriodicType(periodicTypeDTOs, taskPlanSaveOutPutDTO.getTemporaryDate());
-			Reminder reminder=DTOToModelUtil.periodicTypeDTOToReminder(periodicTypeDTO);
-			if (!CronExpression.isValidExpression(reminder.getCRONExpression())) {
-				return false;
+			String facilityIds = StringUtils.collectionToDelimitedString(taskPlanSaveOutPutDTO.getTargetFacilityId(), ",");
+			WorkPlan workPlan=DTOToModelUtil.TaskPlanSaveOutputDTOModel(taskPlanSaveOutPutDTO, facilityIds);
+			//从前台dto中取出Reminder数组
+//			List<PeriodicTypeDTO> periodicTypeDTOs=taskPlanSaveOutPutDTO.getPeriodicTypeList();
+			//保存reminder(内存有cron表达式)
+			List<Integer> periodicTypeDTOs = taskPlanSaveOutPutDTO.getPeriodicTypeList();
+			hibernate.save(workPlan);
+			/*
+			WorkOrder workOrder = new WorkOrder();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			Date date = new Date();
+			workOrder.setName(sdf.format(date));
+			workOrder.setWorkType(workPlan.getType());
+	//		FacilityModel facility = new FacilityModel();
+	//		facility.setId(taskPlanSaveOutPutDTO.getTargetFacilityId());
+	//		workOrder.setFacility(facility);
+			Integer creatorId = taskPlanSaveOutPutDTO.getCreatorId();
+//			UserModel user = addAssignmentsListDao.getUserByUserId(creatorId);
+//			workOrder.setUser(user);
+			workOrder.setState(1);
+			Role role = addAssignmentsListDao.getRoleByRoleId(taskPlanSaveOutPutDTO.getMainRoleId());
+			workOrder.setRole(role);
+			workOrder.setCreatorId(creatorId);
+			workOrder.setCreationDateTime(date);
+			workOrder.setEditorId(creatorId);
+			workOrder.setEditDateTime(date);
+			workOrder.setStatus(1);
+			workOrder.setItemName(workPlan.getMaintenanceItemId() == 1 ? "点检" : "维护保养");
+			workOrder.setFacilityId(facilityIds);
+			workOrder.setWorkPlanId(workPlan.getId());
+			remindsAndAssignmentsCalendarDao.addWorkOrder(workOrder);
+			*/
+			if(CollectionUtils.isNotEmpty(periodicTypeDTOs)) {
+	//		for (PeriodicTypeDTO periodicTypeDTO : periodicTypeDTOs) {
+	//			Reminder reminder=DTOToModelUtil.periodicTypeDTOToReminder(periodicTypeDTO);
+	//			if (!CronExpression.isValidExpression(reminder.getCRONExpression())) {
+	//				return false;
+	//			}
+	//			hibernate.save(reminder);
+	//			TPMWorkPlan_Reminder tpmWorkPlan_Reminder=DTOToModelUtil.ReminderAndWorkPlanToTPMWorkPlan_Reminder(reminder, workPlan);
+	//			//这个和reminder关联的表也要进行数据的插入
+	//			hibernate.save(tpmWorkPlan_Reminder);
+	//
+	//		}
+				PeriodicTypeDTO periodicTypeDTO = DTOToModelUtil.periodicTypeDTOToPeriodicType(periodicTypeDTOs, taskPlanSaveOutPutDTO.getTemporaryDate());
+				Reminder reminder=DTOToModelUtil.periodicTypeDTOToReminder(periodicTypeDTO);
+//				if (!CronExpression.isValidExpression(reminder.getCRONExpression())) {
+//					return false;
+//				}
+				hibernate.save(reminder);
+				TPMWorkPlan_Reminder tpmWorkPlan_Reminder=DTOToModelUtil.ReminderAndWorkPlanToTPMWorkPlan_Reminder(reminder, workPlan);
+				//这个和reminder关联的表也要进行数据的插入
+				hibernate.save(tpmWorkPlan_Reminder);
+				//保存workplan数据
+				//通过CRON表达式定时添加WorkOrder表
+				dynamicScheduledTask.setCron(periodicTypeDTO.getCRONExpression());
+				dynamicScheduledTask.setWorkPlanId(workPlan.getId());
 			}
-			hibernate.save(reminder);
-			TPMWorkPlan_Reminder tpmWorkPlan_Reminder=DTOToModelUtil.ReminderAndWorkPlanToTPMWorkPlan_Reminder(reminder, workPlan);
-			//这个和reminder关联的表也要进行数据的插入
-			hibernate.save(tpmWorkPlan_Reminder);
-			//保存workplan数据
-		}
-		//最后插入workplan的子表workItem
-//		maintenanceTaskPlanDao.addWorkItemByTaskPlanDTO(taskPlanSaveOutPutDTO, workPlan);
-		return true;
+			//最后插入workplan的子表workItem
+	//		maintenanceTaskPlanDao.addWorkItemByTaskPlanDTO(taskPlanSaveOutPutDTO, workPlan);
+			return true;
 	
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -251,10 +289,8 @@ try {
 	}
 
 	@Override
-	public int getCount(String maintenanceTaskPlanName, String facilityName) {
-		
-		return maintenanceTaskPlanDao.getCount(maintenanceTaskPlanName, facilityName)
-				;
+	public int getCount(String maintenanceTaskPlanName, List<Integer> facilityIdList, Integer state) {
+		return maintenanceTaskPlanDao.getCount(maintenanceTaskPlanName, facilityIdList, state);
 	}
 
 	@Override
@@ -266,4 +302,9 @@ try {
 		return true;
 	}
 
+	@Transactional
+	@Override
+	public void updateWorkPlanByWorkPlanId(WorkPlan workPlan) {
+		maintenanceTaskPlanDao.updateWorkPlanByWorkPlanId(workPlan);
+	}
 }

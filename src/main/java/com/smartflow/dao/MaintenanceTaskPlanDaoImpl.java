@@ -3,6 +3,7 @@ package com.smartflow.dao;
 import com.smartflow.dto.maintenancetaskplan.*;
 import com.smartflow.model.*;
 import com.smartflow.util.DTOToModelUtil;
+import com.smartflow.util.StringUtil;
 import com.smartflow.util.WorkPlanUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -13,13 +14,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
 /**
  * @author haita
  */
@@ -52,11 +54,11 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 
 	@Override
 	public List<MaintenanceTaskPlanPageDTO> pageDTO(Integer pageSize, Integer pageIndex, String maintenanceTaskPlanName,
-			String facilityName) {
-		String hql="FROM WorkPlan WHERE State=1";
+													List<Integer> facilityIdList,Integer state) {
+		String hql="FROM WorkPlan WHERE 1=1 ";
 		Session session=hibernateTemplate.getSessionFactory().openSession();
 		Query query=session.createQuery(parseSearchString
-				(maintenanceTaskPlanName,facilityName,hql));
+				(maintenanceTaskPlanName,CollectionUtils.isEmpty(facilityIdList) ? null : StringUtils.collectionToDelimitedString(facilityIdList, ","), state, hql));
 		query.setFirstResult((pageIndex-1)*pageSize);
 		query.setMaxResults(pageSize);
 		try {
@@ -66,21 +68,28 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 			for (WorkPlan workPlan : workPlans) {
 				String targetFacilityName=null;
 				String roleName=null;
-				String state=null;
+				String State=null;
 				String periodicType=null;
-				Station station=stationDao.getStationById(workPlan.getFacilityId());
-				if (station!=null) {
-					targetFacilityName=station.getName();
-				}
-				Role roleModel=new Role();
+
+				List<Integer> facilityIdsList = Arrays.stream(workPlan.getFacilityId().split(",")).map(s -> Integer.parseInt(s.trim())).collect(Collectors.toList());
+//				String facilityName = "";
+				String facilityName = stationDao.getFacilityNameByFacilityIdList(facilityIdsList);
+//				Station station=stationDao.getStationById(workPlan.getTargetFacilityId());
+//				if (station!=null) {
+//					targetFacilityName=station.getName();
+//				}
+				Role roleModel = new Role();
 				if ((roleModel=workPlan.getRole())!=null) {
 					roleName=roleModel.getRoleName();
 				}
+				String stateOperate = "";
 				if (workPlan.getState()==1) {
-					state="生效";
+					State ="生效";
+					stateOperate = "失效";
 				}
 				else {
-					state="失效";
+					State="失效";
+					stateOperate ="生效";
 				}
 				if (workPlan.getType()==1) {
 					periodicType="周期性的";
@@ -88,8 +97,9 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 				else {
 					periodicType="临时的";
 				}
-				taskPlanPageDTOS .add(new MaintenanceTaskPlanPageDTO(workPlan.getId(), workPlan.getName(), workPlan.getVersion(),
-						periodicType, state, targetFacilityName,roleName,workPlan.getEditDateTime()));
+				String maintenanceName = workPlan.getMaintenanceItemId() == 1 ? "点检" : "维护保养";
+				taskPlanPageDTOS .add(new MaintenanceTaskPlanPageDTO(workPlan.getId(), workPlan.getName(),
+						periodicType, State, facilityName,roleName,workPlan.getEditDateTime(), maintenanceName, stateOperate));
 			}
 			return taskPlanPageDTOS ;
 		}
@@ -268,8 +278,8 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 	
 		try {
 
-
-			WorkPlan workPlan=	DTOToModelUtil.TaskPlanSaveOutputDTOModel(taskPlanSaveOutPutDTO);
+			String facilityIds = StringUtils.collectionToDelimitedString(taskPlanSaveOutPutDTO.getTargetFacilityId(), ",");
+			WorkPlan workPlan=	DTOToModelUtil.TaskPlanSaveOutputDTOModel(taskPlanSaveOutPutDTO, facilityIds);
 			hibernateTemplate.save(workPlan);
 
 //			workPlanUtil.saveWorkItemRelatedWorkPlan(taskPlanSaveOutPutDTO.getTaskPlanStepOutPutDTOs(), workPlan);
@@ -343,16 +353,25 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 	}
 
 	@Override
-	public int getCount(String maintenanceTaskPlanName, String facilityName) {
-		String hql="select count(*) FROM WorkPlan WHERE State=1";
-		@SuppressWarnings("unchecked")
-		List<Long> list=(List<Long>)
-				hibernateTemplate.find(parseSearchString
-						(maintenanceTaskPlanName,facilityName,hql));
-		if(list!=null&&!list.isEmpty()){
-			return list.get(0).intValue();
+	public int getCount(String maintenanceTaskPlanName, List<Integer> facilityIdList,Integer state) {
+		String hql="select count(*) FROM WorkPlan WHERE 1=1 ";//WHERE State=1
+		Session session = hibernateTemplate.getSessionFactory().openSession();
+//		@SuppressWarnings("unchecked")
+//		List<Long> list=(List<Long>)
+//				hibernateTemplate.find(parseSearchString
+//						(maintenanceTaskPlanName,CollectionUtils.isEmpty(facilityIdList) ? null : StringUtils.collectionToDelimitedString(facilityIdList, ","), stateList, hql));
+		try{
+			Query query=session.createQuery(parseSearchString
+					(maintenanceTaskPlanName,CollectionUtils.isEmpty(facilityIdList) ? null : StringUtils.collectionToDelimitedString(facilityIdList, ","), state, hql));
+//			if(list!=null&&!list.isEmpty()){
+//				return list.get(0).intValue();
+//			}
+//			return 0;
+			return (query.uniqueResult() == null ? 0 : Integer.parseInt(query.uniqueResult().toString()));
+		}catch (Exception e){
+			e.printStackTrace();
+			return 0;
 		}
-		return 0;
 	}
 
 	@Transactional
@@ -533,16 +552,23 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 	 * @return 返回修饰好的查询语句
 	 */
 	private String parseSearchString(String maintenanceTaskPlanName,
-									 String facilityName,
+									 String facilityName,Integer state,
 									 String hql)
 	{
 		if (maintenanceTaskPlanName!=null && !"".equals(maintenanceTaskPlanName)) {
 			hql += "and Name like '%"+maintenanceTaskPlanName+"%' ";
 		}
 		if (facilityName!=null && !"".equals(facilityName)) {
-			hql += "and TargetFacilityId in (select F.id from StationModel as F where Name like '%"+facilityName+"%'))" ;
+			hql += "and FacilityId = '"+facilityName+"'" ;
+		}
+		if(state != null){
+			hql += " and State = "+state;
 		}
 		return hql;
 	}
 
+	@Override
+	public void updateWorkPlanByWorkPlanId(WorkPlan workPlan) {
+		hibernateTemplate.update(workPlan);
+	}
 }

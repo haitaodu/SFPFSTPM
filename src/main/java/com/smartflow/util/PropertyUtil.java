@@ -1,5 +1,7 @@
 package com.smartflow.util;
 
+import com.smartflow.common.enumpack.Category;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,29 +29,30 @@ public class PropertyUtil {
 		stateMap2.put("label", "已分配");
 		stateMap3.put("key", 3);
 		stateMap3.put("label", "已完成");
-		stateMap4.put("key", 4);
-		stateMap4.put("label", "已审核");
-		stateMap5.put("key", 5);
-		stateMap5.put("label", "已审核完成");
-		stateMap6.put("key", -1);
-		stateMap6.put("label", "已取消");
-		stateMap7.put("key", -2);
-		stateMap7.put("label", "已拒绝");
-		stateMap8.put("key", -3);
-		stateMap8.put("label", "已重新安排");
+//		stateMap4.put("key", 4);
+//		stateMap4.put("label", "已审核");
+//		stateMap5.put("key", 5);
+//		stateMap5.put("label", "已审核完成");
+//		stateMap6.put("key", -1);
+//		stateMap6.put("label", "已取消");
+//		stateMap7.put("key", -2);
+//		stateMap7.put("label", "已拒绝");
+//		stateMap8.put("key", -3);
+//		stateMap8.put("label", "已重新安排");
 		stateMap9.put("key", 0);
 		stateMap9.put("label", "已关闭");
 		stateList.add(stateMap1);
 		stateList.add(stateMap2);
 		stateList.add(stateMap3);
-		stateList.add(stateMap4);
-		stateList.add(stateMap5);
-		stateList.add(stateMap6);
-		stateList.add(stateMap7);
-		stateList.add(stateMap8);
+//		stateList.add(stateMap4);
+//		stateList.add(stateMap5);
+//		stateList.add(stateMap6);
+//		stateList.add(stateMap7);
+//		stateList.add(stateMap8);
 		stateList.add(stateMap9);				
 		return stateList;
 	}
+
 	/**
 	 * 通过状态id获取状态名
 	 * @param statusId
@@ -77,6 +80,24 @@ public class PropertyUtil {
 			status =  "已分配";	
 		}
 		return status;
+	}
+
+
+	/**
+	 * 获取维保项列表以map的形式展示
+	 * @return 返回维保项列表
+	 */
+	public static List<Map<String,Object>> getCategoryMapList()
+	{
+		List<Map<String,Object>> mapList=new ArrayList<>();
+		for (Category category:Category.values())
+		{
+			Map<String,Object> map=new HashMap<>();
+			map.put("key",category.getKey());
+			map.put("label",category.getValue());
+			mapList.add(map);
+		}
+		return mapList;
 	}
 	/**
 	 * 周期类型下拉框
@@ -157,34 +178,34 @@ public class PropertyUtil {
 		Map<String,Object> childrenMap = new HashMap<>();
 		List<Map<String,Object>> weekChildrenList = new ArrayList<>();
 		Map<String,Object> weekMap = new HashMap<>();
-		weekMap.put("key", 1);
+		weekMap.put("value", 1);
 		weekMap.put("label", "周一");
 		weekChildrenList.add(weekMap);
 		weekMap = new HashMap<>();
-		weekMap.put("key", 2);
+		weekMap.put("value", 2);
 		weekMap.put("label", "周二");
 		weekChildrenList.add(weekMap);
 		weekMap = new HashMap<>();
-		weekMap.put("key", 3);
+		weekMap.put("value", 3);
 		weekMap.put("label", "周三");
 		weekChildrenList.add(weekMap);
 		weekMap = new HashMap<>();
-		weekMap.put("key", 4);
+		weekMap.put("value", 4);
 		weekMap.put("label", "周四");
 		weekChildrenList.add(weekMap);
 		weekMap = new HashMap<>();
-		weekMap.put("key", 5);
+		weekMap.put("value", 5);
 		weekMap.put("label", "周五");
 		weekChildrenList.add(weekMap);
 		weekMap = new HashMap<>();
-		weekMap.put("key", 6);
+		weekMap.put("value", 6);
 		weekMap.put("label", "周六");
 		weekChildrenList.add(weekMap);
 		weekMap = new HashMap<>();
-		weekMap.put("key", 7);
+		weekMap.put("value", 7);
 		weekMap.put("label", "周日");
 		weekChildrenList.add(weekMap);
-		periodicMap.put("key", 1);
+		periodicMap.put("value", 1);
 		periodicMap.put("label", "临时的");
 		periodicList.add(periodicMap);
 
@@ -192,24 +213,24 @@ public class PropertyUtil {
 		int i = 1;
 		while(i <= 31){
 			Map<String,Object> monthMap = new HashMap<>();
-			monthMap.put("key", i);
+			monthMap.put("value", i);
 			monthMap.put("label", i+"号");
 			monthChildrenList.add(monthMap);
 			i ++;
 		}
 
-		childrenMap.put("key", 1);
+		childrenMap.put("value", 1);
 		childrenMap.put("label", "每周");
 		childrenMap.put("children", weekChildrenList);
 		childrenList.add(childrenMap);
 		childrenMap = new HashMap<>();
-		childrenMap.put("key", 2);
+		childrenMap.put("value", 2);
 		childrenMap.put("label", "每月");
 		childrenMap.put("children", monthChildrenList);
 		childrenList.add(childrenMap);
 
 		periodicMap = new HashMap<>();
-		periodicMap.put("key", 2);
+		periodicMap.put("value", 2);
 		periodicMap.put("label", "周期性的");
 		periodicMap.put("children", childrenList);
 		periodicList.add(periodicMap);

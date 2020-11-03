@@ -7,6 +7,7 @@ import com.smartflow.dto.maintenanceitem.MaintenanceItemEditeDTO;
 import com.smartflow.dto.maintenanceitem.MaintenanceItemPageDTO;
 import com.smartflow.dto.maintenanceitem.MaintenanceItemSearchDTO;
 import com.smartflow.service.MaintenanceItemService;
+import com.smartflow.util.PropertyUtil;
 import com.smartflow.util.ReadDataUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,7 @@ public class MaintenanceItemController extends  BaseController{
 
         Map<String, Object> json ;
         Map<String, Object> map = new HashMap<>();
-        map.put("CategoryList",getCategoryMapList());
+        map.put("CategoryList", PropertyUtil.getCategoryMapList());
         try {
             json= this.setJson(200, "Success", map);
         } catch (Exception e) {
@@ -127,7 +128,7 @@ public class MaintenanceItemController extends  BaseController{
         Map<String, Object> map = new HashMap<>();
         try {
            map.put("Tdto",maintenanceItemService.getMaintenanceItemEditeDTO(Id));
-           map.put("CategoryList",getCategoryMapList());
+           map.put("CategoryList", PropertyUtil.getCategoryMapList());
             json= this.setJson(200, "Success", map);
         } catch (Exception e) {
             json = this.setJson(0, e.getMessage(),1);
@@ -160,20 +161,5 @@ public class MaintenanceItemController extends  BaseController{
         return json;
     }
 
-    /**
-     * 获取维保项列表以map的形式展示
-     * @return 返回维保项列表
-     */
-    private List<Map<String,Object>> getCategoryMapList()
-    {
-        List<Map<String,Object>> mapList=new ArrayList<>();
-        for (Category category:Category.values())
-        {
-            Map<String,Object> map=new HashMap<>();
-            map.put("key",category.getKey());
-            map.put("label",category.getValue());
-            mapList.add(map);
-        }
-        return mapList;
-    }
+
 }

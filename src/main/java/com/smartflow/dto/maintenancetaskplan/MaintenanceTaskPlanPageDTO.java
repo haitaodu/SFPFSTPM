@@ -7,11 +7,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class MaintenanceTaskPlanPageDTO {
     Integer Id;
     String Name;
-    Integer VersionNumber;
+//    Integer VersionNumber;
     String PeriodicType;
     String State;
     String TargetFacilityName;
     String RoleInCharge;
+    String MaintenanceItemName;
+    String StateOperate;
 @JsonProperty("Id")
     public Integer getId() {
         return Id;
@@ -28,15 +30,15 @@ public class MaintenanceTaskPlanPageDTO {
     public void setName(String name) {
         Name = name;
     }
-@JsonProperty("VersionNumber")
-    public Integer getVersion() {
-        return VersionNumber;
-    }
-
-    public void setVersion(Integer version) {
-        VersionNumber = version;
-    }
-@JsonProperty("PeriodicType'")
+//@JsonProperty("VersionNumber")
+//    public Integer getVersion() {
+//        return VersionNumber;
+//    }
+//
+//    public void setVersion(Integer version) {
+//        VersionNumber = version;
+//    }
+@JsonProperty("PeriodicType")
     public String getType() {
         return PeriodicType;
     }
@@ -79,17 +81,36 @@ public class MaintenanceTaskPlanPageDTO {
 
     Date LastEditeDate;
 
-    public MaintenanceTaskPlanPageDTO(Integer id, String name, Integer version, String type, String state, String facilityName, String roleName, Date editeDate) {
+    @JsonProperty("StateOperate")
+    public String getStateOperate() {
+        return StateOperate;
+    }
+
+    public void setStateOperate(String stateOperate) {
+        StateOperate = stateOperate;
+    }
+
+
+    public MaintenanceTaskPlanPageDTO(Integer id, String name, //Integer version,
+                                      String type, String state, String facilityName, String roleName, Date editeDate, String maintenanceItemName, String stateOperate) {
         Id = id;
         Name = name;
-        VersionNumber = version;
+//        VersionNumber = version;
         PeriodicType = type;
         State = state;
         TargetFacilityName = facilityName;
         RoleInCharge = roleName;
         LastEditeDate = editeDate;
+        MaintenanceItemName = maintenanceItemName;
+        StateOperate = stateOperate;
     }
     public MaintenanceTaskPlanPageDTO(){};
+    @JsonProperty("MaintenanceItemName")
+    public String getMaintenanceItemName() {
+        return MaintenanceItemName;
+    }
 
-
+    public void setMaintenanceItemName(String maintenanceItemName) {
+        MaintenanceItemName = maintenanceItemName;
+    }
 }

@@ -1,11 +1,8 @@
 package com.smartflow.dao;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,6 +13,7 @@ import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.smartflow.dto.AssignmentTaskInitOutputDTO.AssignmentTaskInitOutputRowDTO;
@@ -31,6 +29,9 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 	SessionFactory sessionFactory;
 	@Autowired
 	HibernateTemplate hibernateTemplate;
+
+	@Autowired
+	StationDao stationDao;
 
 	@Override
 	public List<String> getVisitButtonListByUserId(Integer userId) {
@@ -89,8 +90,10 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 			if(roleGroupTaskListConditionDTO.getState() != null && !roleGroupTaskListConditionDTO.getState().isEmpty()){
 				hql += " and Status in (:Status) ";
 			}
-			if(roleGroupTaskListConditionDTO.getRoleGroupId() != 0){
-				hql += " and role = "+roleGroupTaskListConditionDTO.getRoleGroupId();
+			if(CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getRoleGroupId())){
+//			if(roleGroupTaskListConditionDTO.getRoleGroupId() != 0){
+//				hql += " and role = "+roleGroupTaskListConditionDTO.getRoleGroupId();
+				hql += " and role in (:roleIdList)";
 			}
 			Query query = session.createQuery(hql);			
 			if(StringUtil.IsNotBlank(roleGroupTaskListConditionDTO.getStartDateTime())){
@@ -115,6 +118,9 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 					stateList.add(Integer.parseInt(state.get("key").toString()));
 				}
 				query.setParameterList("Status", stateList);
+			}
+			if(CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getRoleGroupId())){
+				query.setParameterList("roleIdList", roleGroupTaskListConditionDTO.getRoleGroupId());
 			}
 			return query.uniqueResult() == null ? null : Integer.parseInt(query.uniqueResult().toString());
 		}catch(Exception e){
@@ -148,8 +154,9 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 			if(roleGroupTaskListConditionDTO.getState() != null && !roleGroupTaskListConditionDTO.getState().isEmpty()){
 				hql += " and Status in (:Status) ";
 			}
-			if(roleGroupTaskListConditionDTO.getRoleGroupId() != 0){
-				hql += " and role = "+roleGroupTaskListConditionDTO.getRoleGroupId();
+			if(CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getRoleGroupId())){
+//			if(roleGroupTaskListConditionDTO.getRoleGroupId() != 0){
+				hql += " and role in (:roleIdList)";
 			}
 			Query query = session.createQuery(hql);			
 			if(StringUtil.IsNotBlank(roleGroupTaskListConditionDTO.getStartDateTime())){
@@ -175,6 +182,9 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 				}
 				query.setParameterList("Status", stateList);
 			}
+			if(CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getRoleGroupId())){
+				query.setParameterList("roleIdList", roleGroupTaskListConditionDTO.getRoleGroupId());
+			}
 			query.setFirstResult((roleGroupTaskListConditionDTO.getPageIndex()-1)*roleGroupTaskListConditionDTO.getPageSize());
 			query.setMaxResults(roleGroupTaskListConditionDTO.getPageSize());
 			List<WorkOrderItem> itemList = query.list();
@@ -189,10 +199,10 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 						taskDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
 					}			
 					taskDTO.setItemName(workOrderItem.getWorkItemName());
-					taskDTO.setPosition(workOrderItem.getDesignator());
+//					taskDTO.setPosition(workOrderItem.getDesignator());
 					taskDTO.setRoleInCharge(workOrderItem.getRole() == null ? null : workOrderItem.getRole().getRoleName());
 					taskDTO.setStaff(workOrderItem.getUser() == null ? null : workOrderItem.getUser().getUserName());
-					taskDTO.setPredictTaskLength(workOrderItem.getLabourTimeSec() == null ? null : StringUtil.decimalFormatMinuteToHour(workOrderItem.getLabourTimeSec()/60/60.0));
+//					taskDTO.setPredictTaskLength(workOrderItem.getLabourTimeSec() == null ? null : StringUtil.decimalFormatMinuteToHour(workOrderItem.getLabourTimeSec()/60/60.0));
 					//taskDTO.setPredictTaskLength(StringUtil.getHourApart(workOrderItem.getEstimatedStartTime(), workOrderItem.getEstimatedEndTime()));	
 					taskList.add(taskDTO);
 				}
@@ -206,6 +216,150 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 		}
 		
 	}
+
+	@Override
+	public Integer getTotalCountWorkOrderListByCondition(RoleGroupTaskListInputDTO roleGroupTaskListConditionDTO) {
+		Session session = sessionFactory.openSession();
+		String hql = "select count(*) from WorkOrder where 1=1 ";
+		try{
+			if(StringUtil.IsNotBlank(roleGroupTaskListConditionDTO.getStartDateTime())){
+				hql += "and CreationDateTime >= :StartTime";
+			}
+			if(StringUtil.IsNotBlank(roleGroupTaskListConditionDTO.getEndDateTime())){
+				hql += " and CreationDateTime <= :EndTime";
+			}
+			if(roleGroupTaskListConditionDTO.getState() != null && !roleGroupTaskListConditionDTO.getState().isEmpty()){
+				hql += " and Status in (:Status) ";
+			}
+			if(CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getRoleGroupId())){
+//			if(roleGroupTaskListConditionDTO.getRoleGroupId() != 0){
+//				hql += " and role = "+roleGroupTaskListConditionDTO.getRoleGroupId();
+				hql += " and role in (:roleIdList) ";
+			}
+			if(!StringUtils.isEmpty(roleGroupTaskListConditionDTO.getAssignmentTaskSheet())){
+				hql += " and Name = :AssignmentTaskSheet";
+			}
+			if(!CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getFacilityIdList())){
+				hql += " and FacilityId = :facilityId ";
+			}
+			Query query = session.createQuery(hql);
+			if(StringUtil.IsNotBlank(roleGroupTaskListConditionDTO.getStartDateTime())){
+				query.setParameter("StartTime", StringUtil.formatDate(roleGroupTaskListConditionDTO.getStartDateTime()));
+			}
+			if(StringUtil.IsNotBlank(roleGroupTaskListConditionDTO.getEndDateTime())){
+				String endDateTime = StringUtil.parseEndDateToEndDateTime(roleGroupTaskListConditionDTO.getEndDateTime());
+				query.setParameter("EndTime", endDateTime);
+//				Date endDateTime = StringUtil.formatDate(roleGroupTaskListConditionDTO.getEndDateTime());
+//				if(roleGroupTaskListConditionDTO.getStartDateTime().equals(roleGroupTaskListConditionDTO.getEndDateTime())){
+//					Calendar calendar = Calendar.getInstance();
+//					calendar.setTime(endDateTime);
+//					calendar.add(Calendar.DAY_OF_MONTH, 1);
+//					query.setParameter("EstimatedEndTime", calendar.getTime());
+//				}else{
+//					query.setParameter("EstimatedEndTime", endDateTime);
+//				}
+			}
+			if(roleGroupTaskListConditionDTO.getState() != null && !roleGroupTaskListConditionDTO.getState().isEmpty()){
+				List<Integer> stateList = new ArrayList<>();
+				for (Map<String,Object> state : roleGroupTaskListConditionDTO.getState()) {
+					stateList.add(Integer.parseInt(state.get("key").toString()));
+				}
+				query.setParameterList("Status", stateList);
+			}
+			if(CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getRoleGroupId())){
+				query.setParameterList("roleIdList", roleGroupTaskListConditionDTO.getRoleGroupId());
+			}
+			if(!StringUtils.isEmpty(roleGroupTaskListConditionDTO.getAssignmentTaskSheet())){
+				query.setParameter("AssignmentTaskSheet", roleGroupTaskListConditionDTO.getAssignmentTaskSheet());
+			}
+			if(!CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getFacilityIdList())){
+				query.setParameter("facilityId", CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getFacilityIdList()) ? null : StringUtils.collectionToDelimitedString(roleGroupTaskListConditionDTO.getFacilityIdList(), ","));
+			}
+			return query.uniqueResult() == null ? null : Integer.parseInt(query.uniqueResult().toString());
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public List<RoleGroupTaskListOutputRowDTO> getWorkOrderListByCondition(RoleGroupTaskListInputDTO roleGroupTaskListConditionDTO) {
+		Session session = sessionFactory.openSession();
+		String hql = "from WorkOrder where 1=1 ";
+		List<RoleGroupTaskListOutputRowDTO> taskList = new ArrayList<>();
+		try{
+			if(StringUtil.IsNotBlank(roleGroupTaskListConditionDTO.getStartDateTime())){
+				hql += "and CreationDateTime >= :StartTime";
+			}
+			if(StringUtil.IsNotBlank(roleGroupTaskListConditionDTO.getEndDateTime())){
+				hql += " and CreationDateTime <= :EndTime";
+			}
+			if(roleGroupTaskListConditionDTO.getState() != null && !roleGroupTaskListConditionDTO.getState().isEmpty()){
+				hql += " and Status in (:Status) ";
+			}
+			if(CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getRoleGroupId())){
+				hql += " and role in (:roleIdList)";
+			}
+			if(!StringUtils.isEmpty(roleGroupTaskListConditionDTO.getAssignmentTaskSheet())){
+				hql += " and Name = :AssignmentTaskSheet";
+			}
+			if(!CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getFacilityIdList())){
+				hql += " and FacilityId = :facilityId ";
+			}
+			Query query = session.createQuery(hql);
+			if(StringUtil.IsNotBlank(roleGroupTaskListConditionDTO.getStartDateTime())){
+				query.setParameter("StartTime", StringUtil.formatDate(roleGroupTaskListConditionDTO.getStartDateTime()));
+			}
+			if(StringUtil.IsNotBlank(roleGroupTaskListConditionDTO.getEndDateTime())){
+				String endDateTime = StringUtil.parseEndDateToEndDateTime(roleGroupTaskListConditionDTO.getEndDateTime());
+				query.setParameter("EndTime", endDateTime);
+
+			}
+			if(roleGroupTaskListConditionDTO.getState() != null && !roleGroupTaskListConditionDTO.getState().isEmpty()){
+				List<Integer> stateList = new ArrayList<>();
+				for (Map<String,Object> state : roleGroupTaskListConditionDTO.getState()) {
+					stateList.add(Integer.parseInt(state.get("key").toString()));
+				}
+				query.setParameterList("Status", stateList);
+			}
+			if(CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getRoleGroupId())){
+				query.setParameterList("roleIdList", roleGroupTaskListConditionDTO.getRoleGroupId());
+			}
+			if(!StringUtils.isEmpty(roleGroupTaskListConditionDTO.getAssignmentTaskSheet())){
+				query.setParameter("AssignmentTaskSheet", roleGroupTaskListConditionDTO.getAssignmentTaskSheet());
+			}
+			if(!CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getFacilityIdList())){
+				query.setParameter("facilityId", CollectionUtils.isEmpty(roleGroupTaskListConditionDTO.getFacilityIdList()) ? null : StringUtils.collectionToDelimitedString(roleGroupTaskListConditionDTO.getFacilityIdList(), ","));
+			}
+			query.setFirstResult((roleGroupTaskListConditionDTO.getPageIndex()-1)*roleGroupTaskListConditionDTO.getPageSize());
+			query.setMaxResults(roleGroupTaskListConditionDTO.getPageSize());
+			List<WorkOrder> workOrderList = query.list();
+			if(workOrderList != null && !workOrderList.isEmpty()){
+				for (WorkOrder workOrder : workOrderList) {
+					RoleGroupTaskListOutputRowDTO taskDTO = new RoleGroupTaskListOutputRowDTO();
+					taskDTO.setTaskId(workOrder.getId());
+					taskDTO.setState(PropertyUtil.getStatusName(workOrder.getStatus()));
+					taskDTO.setAssignmentTaskSheet(workOrder.getName());
+//					taskDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+					List<Integer> facilityIdList = Arrays.stream(workOrder.getFacilityId().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+					taskDTO.setTargetFacility(stationDao.getFacilityNameByFacilityIdList(facilityIdList));
+					taskDTO.setItemName(workOrder.getItemName());
+					taskDTO.setRoleInCharge(workOrder.getRole() == null ? null : workOrder.getRole().getRoleName());
+					taskDTO.setStaff(workOrder.getUser() == null ? null : workOrder.getUser().getUserName());
+					taskList.add(taskDTO);
+				}
+			}
+			return taskList;
+		}catch(Exception e){
+			e.printStackTrace();
+			return taskList;
+		}finally {
+			session.close();
+		}
+	}
+
 	@Override
 	public Integer getStatusByWorkOrderItemId(Integer workOrderItemId) {
 		Session session = sessionFactory.openSession();
@@ -220,7 +374,22 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 			session.close();
 		}
 	}
-	
+
+	@Override
+	public Integer getStatusByWorkOrderId(Integer workOrderId) {
+		Session session = sessionFactory.openSession();
+		try{
+			String hql = "select status from WorkOrder where Id = "+workOrderId;
+			Query query = session.createQuery(hql);
+			return query.uniqueResult() == null ? null : Integer.parseInt(query.uniqueResult().toString());
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally {
+			session.close();
+		}
+	}
+
 	@Override
 	public void updateStatusAndUserIdByWorkOrderItemId(Integer workOrderItemId, Integer userId) {
 		Session session = sessionFactory.openSession();
@@ -237,8 +406,40 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 		}finally {
 			session.close();
 		}
-	}	
-	
+	}
+
+	@Override
+	public void updateStatusAndUserIdByWorkOrderId(Integer workOrderId, Integer userId) {
+		Session session = sessionFactory.openSession();
+		try{
+			String hql = "update WorkOrder set Status = 2";
+			if(userId != 0){
+				hql += ", user = "+userId;
+			}
+			hql += " where Id = "+workOrderId;
+			Query query = session.createQuery(hql);
+			query.executeUpdate();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public void updateStatusByWorkOrderId(Integer workOrderId) {
+		Session session = sessionFactory.openSession();
+		try{
+			String hql = "update WorkOrder set Status = 3 where Id = "+workOrderId;//Status = 3 已完成
+			Query query = session.createQuery(hql);
+			query.executeUpdate();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally {
+			session.close();
+		}
+	}
+
 	@Override
 	public void updateStatusAndUserIdAndRoleIdByWorkOrderItemId(Integer workOrderItemId,Integer userId,Integer roleId) {
 		Session session = sessionFactory.openSession();
@@ -262,7 +463,34 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 		}finally {
 			session.close();
 		}
-	}	
+	}
+
+
+	@Override
+	public void updateStatusAndUserIdAndRoleIdByWorkOrderId(Integer workOrderId, Integer userId, Integer roleId) {
+		Session session = sessionFactory.openSession();
+		try{
+			String hql = "update WorkOrder set Status = 2";
+			if(userId != 0){
+				hql += ", user = "+userId;
+			}else{
+				hql += ", user = NULL";
+			}
+			if(roleId != 0) {
+				hql += ", role = "+roleId;
+			}else{
+				hql += ", role = NULL";
+			}
+			hql += " where Id = "+workOrderId;
+			Query query = session.createQuery(hql);
+			query.executeUpdate();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally {
+			session.close();
+		}
+	}
+
 	@Override
 	public List<String> getRoleNameByUserId(Integer userId) {
 		Session session = sessionFactory.openSession();
@@ -334,6 +562,35 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 			session.close();
 		}
 	}
+
+	@Override
+	public List<AssignmentTaskInitOutputRowDTO> getAssignmentTaskInitDTOByWorkOrderId(List<Integer> workOrderIdList) {
+		Session session = sessionFactory.openSession();
+		try{
+			String hql = "from WorkOrder where Id in (:workOrderIdList)";
+			Query query = session.createQuery(hql);
+			query.setParameterList("workOrderIdList", workOrderIdList);
+			List<AssignmentTaskInitOutputRowDTO> assignmentTaskInitOutputRowDTOList = new ArrayList<>();
+			List<WorkOrder> workOrderList = query.list();
+			for (WorkOrder workOrder : workOrderList) {
+				AssignmentTaskInitOutputRowDTO assignmentTaskInitOutputRowDTO = new AssignmentTaskInitOutputRowDTO();
+				assignmentTaskInitOutputRowDTO.setTaskId(workOrder.getId());
+				assignmentTaskInitOutputRowDTO.setState(PropertyUtil.getStatusName(workOrder.getStatus()));
+				assignmentTaskInitOutputRowDTO.setAssignmentTaskSheet(workOrder.getName());
+				assignmentTaskInitOutputRowDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+				assignmentTaskInitOutputRowDTO.setItemName(workOrder.getItemName());
+				assignmentTaskInitOutputRowDTO.setRoleInCharge(workOrder.getRole() == null ? null : workOrder.getRole().getRoleName());
+				assignmentTaskInitOutputRowDTOList.add(assignmentTaskInitOutputRowDTO);
+			}
+			return assignmentTaskInitOutputRowDTOList;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally {
+			session.close();
+		}
+	}
+
 	@Override
 	public List<Map<String,Object>> getUserList(Integer roleId) {
 		Session session = sessionFactory.openSession();

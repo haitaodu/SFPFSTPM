@@ -132,5 +132,10 @@ public interface StationService {
 	 */
 	public List<Map<String,Object>> getFacilityList();
 
-
+	/**
+	 * 根据设备id查询设备名称（线体->岛区->工站组->工作站）
+	 * @param facilityIdList
+	 * @return
+	 */
+	public String getFacilityNameByFacilityIdList(List<Integer> facilityIdList);
 }

@@ -8,12 +8,15 @@ public enum Category {
     /**
      *TPM的设备维保类型
      */
-    CLEADN(1,"清洁清扫"),
-    CHECK(2,"点检"),
-    MANTAINENCE(3,"维护保养"),
-    CORRECT(4,"校准"),
-    REPLACE(5,"更换"),
-    REPAIRE(6,"维修");
+//    CLEADN(1,"清洁清扫"),
+//    CHECK(2,"点检"),
+//    MANTAINENCE(3,"维护保养"),
+//    CORRECT(4,"校准"),
+//    REPLACE(5,"更换"),
+//    REPAIRE(6,"维修");
+
+    CHECK(1,"点检"),
+    MANTAINENCE(2,"维护保养");
     private int key;
     private String value;
 

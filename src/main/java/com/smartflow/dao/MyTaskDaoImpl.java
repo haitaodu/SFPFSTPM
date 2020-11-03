@@ -1,9 +1,7 @@
 package com.smartflow.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -12,6 +10,7 @@ import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.smartflow.dto.AddMaintenanceRecordInputDTO;
@@ -41,6 +40,8 @@ public class MyTaskDaoImpl implements MyTaskDao {
 	HibernateTemplate hibernateTemplate;
 	@Autowired
 	MyRoleGroupTaskListDao myRoleGroupTaskListDao;
+	@Autowired
+	StationDao stationDao;
 	@Override
 	public Integer getTotalCountRoleGroupTaskListByCondition(TaskListInputDTO taskListInputDTO) {
 		Session session = sessionFactory.openSession();
@@ -55,9 +56,9 @@ public class MyTaskDaoImpl implements MyTaskDao {
 			if(taskListInputDTO.getState() != null && !taskListInputDTO.getState().isEmpty()){				
 				hql += " and item.status in (:status) ";
 			}
-			if(taskListInputDTO.getFacilityId() != null && taskListInputDTO.getFacilityId() != 0){
-				hql += " and workOrder.facility = "+taskListInputDTO.getFacilityId();
-			}
+//			if(taskListInputDTO.getFacilityId() != null && taskListInputDTO.getFacilityId() != 0){
+//				hql += " and workOrder.facility = "+taskListInputDTO.getFacilityId();
+//			}
 			if(taskListInputDTO.getUserId() != null) {
 				hql += " and user.id = "+taskListInputDTO.getUserId();
 			}
@@ -93,9 +94,9 @@ public class MyTaskDaoImpl implements MyTaskDao {
 			if(taskListInputDTO.getState() != null && !taskListInputDTO.getState().isEmpty()){				
 				hql += " and item.status in (:status) ";
 			}
-			if(taskListInputDTO.getFacilityId() != null && taskListInputDTO.getFacilityId() != 0){
-				hql += " and workOrder.facility = "+taskListInputDTO.getFacilityId();
-			}
+//			if(taskListInputDTO.getFacilityId() != null && taskListInputDTO.getFacilityId() != 0){
+//				hql += " and workOrder.facility = "+taskListInputDTO.getFacilityId();
+//			}
 			if(taskListInputDTO.getUserId() != null) {
 				hql += " and user.id = "+taskListInputDTO.getUserId();
 			}
@@ -123,10 +124,10 @@ public class MyTaskDaoImpl implements MyTaskDao {
 						taskDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
 					}			
 					taskDTO.setItemName(workOrderItem.getWorkItemName());
-					taskDTO.setPosition(workOrderItem.getDesignator());
+//					taskDTO.setPosition(workOrderItem.getDesignator());
 					taskDTO.setRoleInCharge(workOrderItem.getRole() == null ? null : workOrderItem.getRole().getRoleName());
 					taskDTO.setStaff(workOrderItem.getUser().getUserName());
-					taskDTO.setPredictTaskLength(workOrderItem.getLabourTimeSec() == null ? null : StringUtil.decimalFormatMinuteToHour(workOrderItem.getLabourTimeSec()/60/60.0));	
+//					taskDTO.setPredictTaskLength(workOrderItem.getLabourTimeSec() == null ? null : StringUtil.decimalFormatMinuteToHour(workOrderItem.getLabourTimeSec()/60/60.0));
 					taskList.add(taskDTO);
 				}
 				return taskList;
@@ -163,7 +164,7 @@ public class MyTaskDaoImpl implements MyTaskDao {
 						taskDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
 					}			
 					taskDTO.setItemName(workOrderItem.getWorkItemName());
-					taskDTO.setPosition(workOrderItem.getDesignator());
+//					taskDTO.setPosition(workOrderItem.getDesignator());
 					UserModel user = workOrderItem.getUser();
 					String roleName = null;
 					if(user != null){
@@ -172,7 +173,7 @@ public class MyTaskDaoImpl implements MyTaskDao {
 					}
 					taskDTO.setRoleInCharge(roleName);
 					taskDTO.setStaff(workOrderItem.getUser().getUserName());
-					taskDTO.setPredictTaskLength(StringUtil.getHourApart(workOrderItem.getEstimatedStartTime(), workOrderItem.getEstimatedEndTime()));	
+//					taskDTO.setPredictTaskLength(StringUtil.getHourApart(workOrderItem.getEstimatedStartTime(), workOrderItem.getEstimatedEndTime()));
 					taskList.add(taskDTO);
 				}
 				return taskList;
@@ -186,7 +187,177 @@ public class MyTaskDaoImpl implements MyTaskDao {
 			session.close();
 		}
 	}
-	
+
+	@Override
+	public List<TaskListOutputDTO> getRoleGroupTaskListByWorkOrderIdList(TaskIdList workOrderIdList) {
+		Session session = sessionFactory.openSession();
+		String hql = "from WorkOrder where id in (:workOrderIdList)";
+		try{
+			Query query = session.createQuery(hql);
+			query.setParameterList("workOrderIdList", workOrderIdList.getTaskIdList());
+			List<WorkOrder> workOrderList = query.list();
+			List<TaskListOutputDTO> taskList = new ArrayList<>();
+			if(!CollectionUtils.isEmpty(workOrderList)){
+				for (WorkOrder workOrder : workOrderList) {
+					TaskListOutputDTO taskDTO = new TaskListOutputDTO();
+					taskDTO.setTaskId(workOrder.getId());
+					taskDTO.setState(PropertyUtil.getStatusName(workOrder.getStatus()));
+					taskDTO.setCreateDateTime(workOrder.getCreationDateTime());
+					taskDTO.setAssignmentTaskSheet(workOrder.getName());
+					taskDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+					taskDTO.setItemName(workOrder.getItemName());
+//					UserModel user = workOrder.getUser();
+//					String roleName = null;
+//					if(user != null){
+//						List<String> roleNameList = myRoleGroupTaskListDao.getRoleNameByUserId(workOrder.getUser().getId());
+//						roleName = StringUtils.collectionToDelimitedString(roleNameList, ",");
+//					}
+//					taskDTO.setRoleInCharge(roleName);
+					taskDTO.setRoleInCharge(workOrder.getRole().getRoleName());
+					taskDTO.setStaff(workOrder.getUser().getUserName());
+//					taskDTO.setPredictTaskLength(StringUtil.getHourApart(workOrderItem.getEstimatedStartTime(), workOrderItem.getEstimatedEndTime()));
+					taskList.add(taskDTO);
+				}
+				return taskList;
+			}else {
+				return new ArrayList<>();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public Integer getTotalCountWorkOrderListByCondition(TaskListInputDTO taskListInputDTO) {
+		Session session = sessionFactory.openSession();
+		String hql = "select count(*) from WorkOrder where 1=1 ";
+		try{
+			if(StringUtil.IsNotBlank(taskListInputDTO.getStartDateTime())){
+				hql += "and CreationDateTime >= '"+taskListInputDTO.getStartDateTime()+"'";
+			}
+			if(StringUtil.IsNotBlank(taskListInputDTO.getEndDateTime())){
+				hql += " and CreationDateTime <= '"+StringUtil.parseEndDateToEndDateTime(taskListInputDTO.getEndDateTime())+"'";
+			}
+			if(taskListInputDTO.getState() != null && !taskListInputDTO.getState().isEmpty()){
+				hql += " and status in (:status) ";
+			}
+//			if(taskListInputDTO.getFacilityId() != null && taskListInputDTO.getFacilityId() != 0){
+//				hql += " and workOrder.facility = "+taskListInputDTO.getFacilityId();
+//			}
+			if(taskListInputDTO.getUserId() != null) {
+				hql += " and user.id = "+taskListInputDTO.getUserId();
+			}
+			if(!StringUtils.isEmpty(taskListInputDTO.getAssignmentTaskSheet())){
+				hql += " and Name = :AssignmentTaskSheet";
+			}
+			if(!CollectionUtils.isEmpty(taskListInputDTO.getFacilityIdList())){
+				hql += " and FacilityId = :facilityId ";
+			}
+			Query query = session.createQuery(hql);
+			if(taskListInputDTO.getState() != null && !taskListInputDTO.getState().isEmpty()){
+//				List<Integer> stateList = new ArrayList<>();
+//				for (Map<String,Object> state : taskListInputDTO.getState()) {
+//					stateList.add(Integer.parseInt(state.get("key").toString()));
+//				}
+				query.setParameterList("status", taskListInputDTO.getState());
+			}
+			if(!StringUtils.isEmpty(taskListInputDTO.getAssignmentTaskSheet())){
+				query.setParameter("AssignmentTaskSheet", taskListInputDTO.getAssignmentTaskSheet());
+			}
+			if(!CollectionUtils.isEmpty(taskListInputDTO.getFacilityIdList())){
+				query.setParameter("facilityId", CollectionUtils.isEmpty(taskListInputDTO.getFacilityIdList()) ? null : StringUtils.collectionToDelimitedString(taskListInputDTO.getFacilityIdList(), ","));
+			}
+			return query.uniqueResult() == null ? null : Integer.parseInt(query.uniqueResult().toString());
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally {
+			session.close();
+		}
+	}
+
+	@Override
+	public List<TaskListOutputDTO> getWorkOrderListByCondition(TaskListInputDTO taskListInputDTO) {
+		Session session = sessionFactory.openSession();
+		String hql = "from WorkOrder where 1=1 ";
+		try{
+			if(StringUtil.IsNotBlank(taskListInputDTO.getStartDateTime())){
+				hql += "and CreationDateTime >= '"+taskListInputDTO.getStartDateTime()+"'";
+			}
+			if(StringUtil.IsNotBlank(taskListInputDTO.getEndDateTime())){
+				hql += " and CreationDateTime <= '"+StringUtil.parseEndDateToEndDateTime(taskListInputDTO.getEndDateTime())+"'";
+			}
+			if(taskListInputDTO.getState() != null && !taskListInputDTO.getState().isEmpty()){
+				hql += " and status in (:status) ";
+			}
+//			if(taskListInputDTO.getFacilityId() != null && taskListInputDTO.getFacilityId() != 0){
+//				hql += " and workOrder.facility = "+taskListInputDTO.getFacilityId();
+//			}
+			if(!StringUtils.isEmpty(taskListInputDTO.getAssignmentTaskSheet())){
+				hql += " and Name = :AssignmentTaskSheet";
+			}
+			if(!CollectionUtils.isEmpty(taskListInputDTO.getFacilityIdList())){
+				hql += "";
+			}
+			if(taskListInputDTO.getUserId() != null) {
+				hql += " and user.id = "+taskListInputDTO.getUserId();
+			}
+			if(!CollectionUtils.isEmpty(taskListInputDTO.getFacilityIdList())){
+				hql += " and FacilityId = :facilityId ";
+			}
+			Query query = session.createQuery(hql);
+			if(taskListInputDTO.getState() != null && !taskListInputDTO.getState().isEmpty()){
+//				List<Integer> stateList = new ArrayList<>();
+//				for (Map<String,Object> state : taskListInputDTO.getState()) {
+//					stateList.add(Integer.parseInt(state.get("key").toString()));
+//				}
+				query.setParameterList("status", taskListInputDTO.getState());
+			}
+			if(!StringUtils.isEmpty(taskListInputDTO.getAssignmentTaskSheet())){
+				query.setParameter("AssignmentTaskSheet", taskListInputDTO.getAssignmentTaskSheet());
+			}
+			if(!CollectionUtils.isEmpty(taskListInputDTO.getFacilityIdList())){
+				query.setParameter("facilityId", CollectionUtils.isEmpty(taskListInputDTO.getFacilityIdList()) ? null : StringUtils.collectionToDelimitedString(taskListInputDTO.getFacilityIdList(), ","));
+			}
+			query.setFirstResult((taskListInputDTO.getPageIndex()-1)*taskListInputDTO.getPageSize());
+			query.setMaxResults(taskListInputDTO.getPageSize());
+			List<WorkOrder> workOrderList = query.list();
+			List<TaskListOutputDTO> taskList = new ArrayList<>();
+			if(!CollectionUtils.isEmpty(workOrderList)){
+				for (WorkOrder workOrder : workOrderList) {
+					TaskListOutputDTO taskDTO = new TaskListOutputDTO();
+					taskDTO.setTaskId(workOrder.getId());
+					taskDTO.setState(PropertyUtil.getStatusName(workOrder.getStatus()));
+					taskDTO.setCreateDateTime(workOrder.getCreationDateTime());
+					taskDTO.setAssignmentTaskSheet(workOrder.getName());
+//					taskDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+					List<Integer> facilityIdList = Arrays.stream(workOrder.getFacilityId().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+					taskDTO.setTargetFacility(stationDao.getFacilityNameByFacilityIdList(facilityIdList));
+					taskDTO.setItemName(workOrder.getItemName());
+					taskDTO.setRoleInCharge(workOrder.getRole() == null ? null : workOrder.getRole().getRoleName());
+					taskDTO.setStaff(workOrder.getUser().getUserName());
+					if(workOrder.getStatus() == 1 || workOrder.getStatus() == 2){//已分配状态的可以点完成
+						taskDTO.setCompleteButtonFlag(true);
+					}else if(workOrder.getStatus() == 3 || workOrder.getState() == 0){//已完成、已关闭的不可点完成
+						taskDTO.setCompleteButtonFlag(false);
+					}
+					taskList.add(taskDTO);
+				}
+				return taskList;
+			}else {
+				return new ArrayList<>();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally {
+			session.close();
+		}
+	}
+
 	@Override
 	public TaskDetailOutputDTO getTaskDetailByTaskId(Integer taskId) {
 		Session session = sessionFactory.openSession();

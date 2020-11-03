@@ -11,10 +11,10 @@ public class RoleGroupTaskListOutputRowDTO {
 	private String AssignmentTaskSheet;//派工任务单
 	private String TargetFacility;//目标设备
 	private String ItemName;//项目名
-	private String Position;//位置
+//	private String Position;//位置
 	private String RoleInCharge;//负责角色
 	private String Staff;//人员
-	private BigDecimal PredictTaskLength;//预估任务时长
+//	private BigDecimal PredictTaskLength;//预估任务时长
 	@JsonProperty("Id")
 	public Integer getTaskId() {
 		return TaskId;
@@ -50,13 +50,13 @@ public class RoleGroupTaskListOutputRowDTO {
 	public void setItemName(String itemName) {
 		ItemName = itemName;
 	}
-	@JsonProperty("Position")
-	public String getPosition() {
-		return Position;
-	}	
-	public void setPosition(String position) {
-		Position = position;
-	}
+//	@JsonProperty("Position")
+//	public String getPosition() {
+//		return Position;
+//	}
+//	public void setPosition(String position) {
+//		Position = position;
+//	}
 	@JsonProperty("RoleInCharge")
 	public String getRoleInCharge() {
 		return RoleInCharge;
@@ -71,29 +71,31 @@ public class RoleGroupTaskListOutputRowDTO {
 	public void setStaff(String staff) {
 		Staff = staff;
 	}
-	@JsonProperty("PredictTaskLength")
-	public BigDecimal getPredictTaskLength() {
-		return PredictTaskLength;
-	}
-	public void setPredictTaskLength(BigDecimal predictTaskLength) {
-		PredictTaskLength = predictTaskLength;
-	}
+//	@JsonProperty("PredictTaskLength")
+//	public BigDecimal getPredictTaskLength() {
+//		return PredictTaskLength;
+//	}
+//	public void setPredictTaskLength(BigDecimal predictTaskLength) {
+//		PredictTaskLength = predictTaskLength;
+//	}
 	
 	public RoleGroupTaskListOutputRowDTO() {
 		
 	}
 	public RoleGroupTaskListOutputRowDTO(Integer taskId, String state, String assignmentTaskSheet,
-			String targetFacility, String itemName, String position, String roleInCharge, String staff,
-			BigDecimal predictTaskLength) {
+			String targetFacility, String itemName, //String position,
+			String roleInCharge, String staff//,
+			//BigDecimal predictTaskLength
+			) {
 		TaskId = taskId;
 		State = state;
 		AssignmentTaskSheet = assignmentTaskSheet;
 		TargetFacility = targetFacility;
 		ItemName = itemName;
-		Position = position;
+//		Position = position;
 		RoleInCharge = roleInCharge;
 		Staff = staff;
-		PredictTaskLength = predictTaskLength;
+//		PredictTaskLength = predictTaskLength;
 	}
 	
 

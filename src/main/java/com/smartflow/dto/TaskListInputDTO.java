@@ -12,9 +12,12 @@ public class TaskListInputDTO {
 	private String EndDateTime;//结束日期
 	//private List<Map<String,Object>> State;//状态
 	private List<Integer> State;//状态
-	private Integer FacilityId;//设备id
+//	private Integer FacilityId;//设备id
 	private Integer PageIndex;
 	private Integer PageSize;
+
+	private List<Integer> FacilityIdList;//设备id
+	private String AssignmentTaskSheet;//任务单号
 	public TaskListInputDTO() {
 		
 	}
@@ -53,13 +56,13 @@ public class TaskListInputDTO {
 	public void setState(List<Integer> state) {
 		State = state;
 	}
-	public void setFacilityId(Integer facilityId) {
-		FacilityId = facilityId;
-	}
-	@JsonProperty("FacilityId")
-	public Integer getFacilityId() {
-		return FacilityId;
-	}
+//	public void setFacilityId(Integer facilityId) {
+//		FacilityId = facilityId;
+//	}
+//	@JsonProperty("FacilityId")
+//	public Integer getFacilityId() {
+//		return FacilityId;
+//	}
 	@JsonProperty("PageIndex")
 	public Integer getPageIndex() {
 		return PageIndex;
@@ -74,6 +77,20 @@ public class TaskListInputDTO {
 	public void setPageSize(Integer pageSize) {
 		PageSize = pageSize;
 	}
-	
-	
+	@JsonProperty("FacilityIdList")
+	public List<Integer> getFacilityIdList() {
+		return FacilityIdList;
+	}
+
+	public void setFacilityIdList(List<Integer> facilityIdList) {
+		FacilityIdList = facilityIdList;
+	}
+	@JsonProperty("AssignmentTaskSheet")
+	public String getAssignmentTaskSheet() {
+		return AssignmentTaskSheet;
+	}
+
+	public void setAssignmentTaskSheet(String assignmentTaskSheet) {
+		AssignmentTaskSheet = assignmentTaskSheet;
+	}
 }

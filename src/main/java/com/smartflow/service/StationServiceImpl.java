@@ -1,5 +1,6 @@
 package com.smartflow.service;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,18 +131,29 @@ public class StationServiceImpl implements StationService {
 	@Override
 	public List<Map<String, Object>> getFacilityList() {
 		List<Map<String,Object>> areaList = stationDao.getAreaList();
+		Map<String,Object> all = new HashMap<>();
+		all.put("value", 0);
+		all.put("label", "所有");
 		for (Map<String,Object> area:areaList) {
-			List<Map<String,Object>> cellList = stationDao.getCellListByAreaId(Integer.parseInt(area.get("key").toString()));
+			List<Map<String,Object>> cellList = stationDao.getCellListByAreaId(Integer.parseInt(area.get("value").toString()));
+			cellList.add(0, all);
 			area.put("children", cellList);
 			for (Map<String,Object> cell:cellList) {
-				List<Map<String,Object>> stationGroupList = stationDao.getStationGroupListByCellId(Integer.parseInt(cell.get("key").toString()));
+				List<Map<String,Object>> stationGroupList = stationDao.getStationGroupListByCellId(Integer.parseInt(cell.get("value").toString()));
+				stationGroupList.add(0, all);
 				cell.put("children", stationGroupList);
 				for (Map<String,Object> stationGroup:stationGroupList) {
-					List<Map<String,Object>> stationList = stationDao.getStationListByStationGroupId(Integer.parseInt(stationGroup.get("key").toString()));
+					List<Map<String,Object>> stationList = stationDao.getStationListByStationGroupId(Integer.parseInt(stationGroup.get("value").toString()));
 					stationGroup.put("children", stationList);
 				}
+
 			}
 		}
 		return areaList;
+	}
+
+	@Override
+	public String getFacilityNameByFacilityIdList(List<Integer> facilityIdList) {
+		return stationDao.getFacilityNameByFacilityIdList(facilityIdList);
 	}
 }

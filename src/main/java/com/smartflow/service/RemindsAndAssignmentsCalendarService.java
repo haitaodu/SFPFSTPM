@@ -55,7 +55,13 @@ public interface RemindsAndAssignmentsCalendarService {
 	 * @param confirmUnifiedArrangementsDTO
 	 */
 	public void addWorkOrderAndWorkOrderItemAndWorkPlanExcutionState(ConfirmUnifiedArrangementsDTO confirmUnifiedArrangementsDTO);
-	
+
+	/**
+	 * 添加WorkOrder表
+	 * @param workOrder
+	 */
+	public void addWorkOrder(WorkOrder workOrder);
+
 	/**
 	 * 根据workItemId查询FacilityId
 	 * @param workItemId
