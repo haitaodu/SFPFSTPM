@@ -57,11 +57,12 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 													List<Integer> facilityIdList,Integer state) {
 		String hql="FROM WorkPlan WHERE 1=1 ";
 		Session session=hibernateTemplate.getSessionFactory().openSession();
-		Query query=session.createQuery(parseSearchString
-				(maintenanceTaskPlanName,CollectionUtils.isEmpty(facilityIdList) ? null : StringUtils.collectionToDelimitedString(facilityIdList, ","), state, hql));
-		query.setFirstResult((pageIndex-1)*pageSize);
-		query.setMaxResults(pageSize);
 		try {
+			Query query=session.createQuery(parseSearchString
+					(maintenanceTaskPlanName,CollectionUtils.isEmpty(facilityIdList) ? null : StringUtils.collectionToDelimitedString(facilityIdList, ","), state, hql));
+			query.setFirstResult((pageIndex-1)*pageSize);
+			query.setMaxResults(pageSize);
+
 			@SuppressWarnings("unchecked")
 			List<WorkPlan> workPlans=query.list();
 			List<MaintenanceTaskPlanPageDTO> taskPlanPageDTOS =new ArrayList<>();
@@ -92,10 +93,10 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 					stateOperate ="生效";
 				}
 				if (workPlan.getType()==1) {
-					periodicType="周期性的";
+					periodicType="临时的";
 				}
 				else {
-					periodicType="临时的";
+					periodicType="周期性的";
 				}
 				String maintenanceName = workPlan.getMaintenanceItemId() == 1 ? "点检" : "维护保养";
 				taskPlanPageDTOS .add(new MaintenanceTaskPlanPageDTO(workPlan.getId(), workPlan.getName(),
@@ -371,6 +372,8 @@ public class MaintenanceTaskPlanDaoImpl implements MaintenanceTaskPlanDao,Serial
 		}catch (Exception e){
 			e.printStackTrace();
 			return 0;
+		}finally {
+			session.close();
 		}
 	}
 

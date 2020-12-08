@@ -49,9 +49,9 @@ public class AddAssignmentsListServiceImpl implements AddAssignmentsListService 
 			SimpleDateFormat sdfFormatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			workOrder.setName(sdf.format(new Date()));
 			workOrder.setWorkType(null);
-			FacilityModel facility = new FacilityModel();
-			facility.setId(addAssignListInputDTO.getTargetFacilityId());
-			workOrder.setFacility(facility);
+//			FacilityModel facility = new FacilityModel();
+//			facility.setId(addAssignListInputDTO.getTargetFacilityId());
+//			workOrder.setFacility(facility);
 			UserModel user = this.getUserByUserId(addAssignListInputDTO.getUserId());
 			workOrder.setUser(user);
 			workOrder.setState(1);

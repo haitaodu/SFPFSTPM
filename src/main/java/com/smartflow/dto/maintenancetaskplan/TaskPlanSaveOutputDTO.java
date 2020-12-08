@@ -23,7 +23,7 @@ public class TaskPlanSaveOutputDTO {
 	@NotNull(message = "{taskPlan.MainRoleId.required}")
 	Integer MainRoleId;
 //	List<TaskPlanStepOutPutDTO> TaskPlanStepOutPutDTOs;
-@NotNull(message = "{taskPlan.MaintenanceItemId.required}")
+	@NotNull(message = "{taskPlan.MaintenanceItemId.required}")
 	Integer MaintenanceItemId;
 
 	@JsonProperty("PlanName")

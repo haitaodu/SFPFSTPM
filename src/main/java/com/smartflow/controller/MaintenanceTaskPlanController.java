@@ -301,11 +301,11 @@ public class MaintenanceTaskPlanController extends  BaseController {
         Map<String, Object> json = new HashMap<String, Object>();
         Map<String, Object> map = new HashMap<String, Object>();
         KeyLabelToLabelImpl keyLabelToLabel = new KeyLabelToLabelImpl();
-        List<Map<String, Object>>  stepList = keyLabelToLabel.changeDataToLabel(maintenanceTaskPlanService.getStepList());
+//        List<Map<String, Object>>  stepList = keyLabelToLabel.changeDataToLabel(maintenanceTaskPlanService.getStepList());
         map.put("TargetFacilityList",stationService.getFacilityList());
         map.put("RoleList",maintenanceTaskPlanService.getRoleList());
         map.put("PeriodicList", PropertyUtil.getPeriodicTypeList());
-        map.put("MaintenanceItemList", keyLabelToLabel.changeDataToLabel(maintenanceTaskPlanService.getStepList()));
+        map.put("MaintenanceItemList", maintenanceTaskPlanService.getStepList());
 //        map.put("MaintenanceItemList", PropertyUtil.getCategoryMapList());
         try {
             json = this.setJson(200, "Success", map);

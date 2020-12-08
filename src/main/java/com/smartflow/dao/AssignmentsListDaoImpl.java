@@ -1,9 +1,12 @@
 package com.smartflow.dao;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.smartflow.service.StationService;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -33,6 +36,8 @@ public class AssignmentsListDaoImpl implements AssignmentsListDao {
 	HibernateTemplate hibernateTemplate;
 	@Autowired
 	MyRoleGroupTaskListDao myRoleGroupTaskListDao;
+	@Autowired
+	StationService stationService;
 
 	@Override
 	public Integer getTotalCountWorkOrderListByCondition(
@@ -125,7 +130,8 @@ public class AssignmentsListDaoImpl implements AssignmentsListDao {
 					assignmentsListOutputDTO.setVersionNumber(1);
 					assignmentsListOutputDTO.setPeriodicType(workOrder.getWorkType() == null ? null : PropertyUtil.getPeriodicTypeNameByTypeId(workOrder.getWorkType()));
 					assignmentsListOutputDTO.setState(workOrder.getStatus() == null ? null : PropertyUtil.getStatusName(workOrder.getStatus()));
-					assignmentsListOutputDTO.setTargetFacilityName(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+					List<Integer> facilityIdList = Arrays.stream(workOrder.getFacilityId().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+					assignmentsListOutputDTO.setTargetFacilityName(stationService.getFacilityNameByFacilityIdList(facilityIdList));
 //					if(workOrder.getUser() != null){
 //						List<String> roleNameList = myRoleGroupTaskListDao.getRoleNameByUserId(workOrder.getUser() == null ? null : workOrder.getUser().getId());
 //						if(roleNameList != null){

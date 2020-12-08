@@ -196,7 +196,8 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 					WorkOrder workOrder = workOrderItem.getWorkOrder();
 					if(workOrder != null){						
 						taskDTO.setAssignmentTaskSheet(workOrder.getName());
-						taskDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+						List<Integer> facilityIdList = Arrays.stream(workOrder.getFacilityId().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+						taskDTO.setTargetFacility(stationDao.getFacilityNameByFacilityIdList(facilityIdList));
 					}			
 					taskDTO.setItemName(workOrderItem.getWorkItemName());
 //					taskDTO.setPosition(workOrderItem.getDesignator());
@@ -537,7 +538,8 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 				WorkOrder workOrder = workOrderItem.getWorkOrder();
 				if(workOrder != null){
 					assignmentTaskInitOutputRowDTO.setAssignmentTaskSheet(workOrder.getName());
-					assignmentTaskInitOutputRowDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+					List<Integer> facilityIdList = Arrays.stream(workOrder.getFacilityId().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+					assignmentTaskInitOutputRowDTO.setTargetFacility(stationDao.getFacilityNameByFacilityIdList(facilityIdList));
 				}
 				assignmentTaskInitOutputRowDTO.setItemName(workOrderItem.getWorkItemName());			
 				assignmentTaskInitOutputRowDTO.setPosition(workOrderItem.getDesignator());
@@ -577,7 +579,8 @@ public class MyRoleGroupTaskListDaoImpl implements MyRoleGroupTaskListDao {
 				assignmentTaskInitOutputRowDTO.setTaskId(workOrder.getId());
 				assignmentTaskInitOutputRowDTO.setState(PropertyUtil.getStatusName(workOrder.getStatus()));
 				assignmentTaskInitOutputRowDTO.setAssignmentTaskSheet(workOrder.getName());
-				assignmentTaskInitOutputRowDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+				List<Integer> facilityIdList = Arrays.stream(workOrder.getFacilityId().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+				assignmentTaskInitOutputRowDTO.setTargetFacility(stationDao.getFacilityNameByFacilityIdList(facilityIdList));
 				assignmentTaskInitOutputRowDTO.setItemName(workOrder.getItemName());
 				assignmentTaskInitOutputRowDTO.setRoleInCharge(workOrder.getRole() == null ? null : workOrder.getRole().getRoleName());
 				assignmentTaskInitOutputRowDTOList.add(assignmentTaskInitOutputRowDTO);

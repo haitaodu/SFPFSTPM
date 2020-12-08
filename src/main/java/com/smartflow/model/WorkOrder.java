@@ -23,7 +23,7 @@ public class WorkOrder {
 	private Integer Id;
 	private String Name;
 	private Integer WorkType;
-	private FacilityModel Facility;//TargetFacilityId;
+//	private FacilityModel Facility;//TargetFacilityId;
 	private Role role;//LeaderRoleId
 	private UserModel user;//LeaderId;
 	private Integer State;
@@ -69,16 +69,16 @@ public class WorkOrder {
 		WorkType = workType;
 	}
 
-	@OneToOne
-	@JoinColumn(name="TargetFacilityId")
-	public FacilityModel getFacility() {
-		return Facility;
-	}
-
-
-	public void setFacility(FacilityModel facility) {
-		Facility = facility;
-	}
+//	@OneToOne
+//	@JoinColumn(name="TargetFacilityId")
+//	public FacilityModel getFacility() {
+//		return Facility;
+//	}
+//
+//
+//	public void setFacility(FacilityModel facility) {
+//		Facility = facility;
+//	}
 	@ManyToOne
 	@JoinColumn(name="LeaderRoleId")
 	public Role getRole() {

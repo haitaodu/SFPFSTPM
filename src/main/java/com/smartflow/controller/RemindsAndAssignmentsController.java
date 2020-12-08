@@ -1,15 +1,9 @@
 package com.smartflow.controller;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.log4j.Logger;
-import org.hibernate.mapping.Array;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -91,7 +85,7 @@ public class RemindsAndAssignmentsController extends BaseController {
 	BOMHeadDao bomHeadDao;
 	/**
 	 * 获取维保及派工日历表数据
-	 * @param flag 月/周/天
+	 * //@param flag 月/周/天
 	 * @return
 	 */
 	@CrossOrigin(origins="*",maxAge=3600)
@@ -347,7 +341,7 @@ public class RemindsAndAssignmentsController extends BaseController {
 	
 	/**
 	 * 根据派工单号、开始日期、结束日期、目标设备名、负责人、是否显示已完成项等条件查询派工清单
-	 * @param confirmUnifiedArrangementsDTO
+	 * @param getAssignmentsListConditionDTO
 	 * @return
 	 */
 	@CrossOrigin(origins="*",maxAge=3600)
@@ -439,7 +433,7 @@ public class RemindsAndAssignmentsController extends BaseController {
 	
 	/**
 	 * 工作分配记录
-	 * @param WorkItemId
+	 * @param WorkOrderItemId
 	 * @return
 	 */
 	@CrossOrigin(origins="*",maxAge=3600)
@@ -775,7 +769,7 @@ public class RemindsAndAssignmentsController extends BaseController {
 			}
 			List<Map<String,Object>> roleInChargeList = myRoleGroupTaskListSerivce.getRoleGroupList();
 			editAssignListInit.setRoleInChargeList(roleInChargeList);
-			editAssignListInit.setTargetFacilityId(workOrder.getFacility().getId());
+//			editAssignListInit.setTargetFacilityId(workOrder.getFacility().getId());
 //			Integer facilityId = editAssignListInit.getTargetFacilityId();
 			List<Map<String,Object>> facilityList = myTaskService.getFacilityList();
 			editAssignListInit.setTargetFacilityList(facilityList);
@@ -939,10 +933,10 @@ public class RemindsAndAssignmentsController extends BaseController {
 			if(editAssignListInputDTO.getRoleInChargeId() != null){
 				workOrder.setRole(addAssignmentsListService.getRoleByRoleId(editAssignListInputDTO.getRoleInChargeId()));
 			}
-			if(editAssignListInputDTO.getTargetFacilityId() != null){
-				FacilityModel facility = editAssignmentsListService.getFacilityByFacilityId(editAssignListInputDTO.getTargetFacilityId());
-				workOrder.setFacility(facility);
-			}
+//			if(editAssignListInputDTO.getTargetFacilityId() != null){
+//				FacilityModel facility = editAssignmentsListService.getFacilityByFacilityId(editAssignListInputDTO.getTargetFacilityId());
+//				workOrder.setFacility(facility);
+//			}
 			workOrder.setEditorId(editAssignListInputDTO.getUserId());
 			workOrder.setEditDateTime(new Date());
 			editAssignmentsListService.updateWorkOrder(workOrder);

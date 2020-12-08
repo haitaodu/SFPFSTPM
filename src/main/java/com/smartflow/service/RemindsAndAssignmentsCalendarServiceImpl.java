@@ -96,8 +96,8 @@ public class RemindsAndAssignmentsCalendarServiceImpl implements RemindsAndAssig
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 			workOrder.setName(sdf.format(new Date()));
 			workOrder.setWorkType(null);
-			FacilityModel facility = editAssignmentsListDao.getFacilityByFacilityId(facilityId);
-			workOrder.setFacility(facility);
+//			FacilityModel facility = editAssignmentsListDao.getFacilityByFacilityId(facilityId);
+//			workOrder.setFacility(facility);
 	//		workOrder.setUser(user);
 			workOrder.setState(1);
 			Role role = addAssignmentsListDao.getRoleByRoleId(confirmUnifiedArrangementsDTO.getRoleGroupId());

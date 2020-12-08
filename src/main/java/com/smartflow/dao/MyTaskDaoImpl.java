@@ -121,7 +121,8 @@ public class MyTaskDaoImpl implements MyTaskDao {
 					if(workOrder != null){	
 						taskDTO.setCreateDateTime(workOrder.getCreationDateTime());
 						taskDTO.setAssignmentTaskSheet(workOrder.getName());
-						taskDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+						List<Integer> facilityIdList = Arrays.stream(workOrder.getFacilityId().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+						taskDTO.setTargetFacility(stationDao.getFacilityNameByFacilityIdList(facilityIdList));
 					}			
 					taskDTO.setItemName(workOrderItem.getWorkItemName());
 //					taskDTO.setPosition(workOrderItem.getDesignator());
@@ -161,7 +162,8 @@ public class MyTaskDaoImpl implements MyTaskDao {
 					if(workOrder != null){	
 						taskDTO.setCreateDateTime(workOrder.getCreationDateTime());
 						taskDTO.setAssignmentTaskSheet(workOrder.getName());
-						taskDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+						List<Integer> facilityIdList = Arrays.stream(workOrder.getFacilityId().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+						taskDTO.setTargetFacility(stationDao.getFacilityNameByFacilityIdList(facilityIdList));
 					}			
 					taskDTO.setItemName(workOrderItem.getWorkItemName());
 //					taskDTO.setPosition(workOrderItem.getDesignator());
@@ -204,7 +206,8 @@ public class MyTaskDaoImpl implements MyTaskDao {
 					taskDTO.setState(PropertyUtil.getStatusName(workOrder.getStatus()));
 					taskDTO.setCreateDateTime(workOrder.getCreationDateTime());
 					taskDTO.setAssignmentTaskSheet(workOrder.getName());
-					taskDTO.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());
+					List<Integer> facilityIdList = Arrays.stream(workOrder.getFacilityId().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+					taskDTO.setTargetFacility(stationDao.getFacilityNameByFacilityIdList(facilityIdList));
 					taskDTO.setItemName(workOrder.getItemName());
 //					UserModel user = workOrder.getUser();
 //					String roleName = null;
@@ -367,8 +370,9 @@ public class MyTaskDaoImpl implements MyTaskDao {
 			if(workOrderItem != null){
 				taskDetail.setTaskId(workOrderItem.getId());
 				WorkOrder workOrder = workOrderItem.getWorkOrder();
-				if(workOrder != null){	
-					taskDetail.setTargetFacility(workOrder.getFacility() == null ? null : workOrder.getFacility().getName());	
+				if(workOrder != null){
+					List<Integer> facilityIdList = Arrays.stream(workOrder.getFacilityId().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+					taskDetail.setTargetFacility(stationDao.getFacilityNameByFacilityIdList(facilityIdList));
 				}			
 				taskDetail.setItemName(workOrderItem.getWorkItemName());
 				taskDetail.setPosition(workOrderItem.getDesignator());
